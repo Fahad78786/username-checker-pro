@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel — UserChecker Pro</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Segoe UI',sans-serif; background:#0f0f0f; color:#fff; min-height:100vh; }
+    header { background:#1a1a1a; border-bottom:1px solid #2a2a2a; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; }
+    .logo { font-size:20px; font-weight:700; background:linear-gradient(90deg,#a855f7,#ec4899); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .logout-btn { background:transparent; border:1px solid #333; color:#888; padding:6px 16px; border-radius:8px; cursor:pointer; font-size:13px; }
+    .logout-btn:hover { color:#fff; border-color:#555; }
+    main { max-width:1100px; margin:0 auto; padding:30px 20px; }
+    h2 { font-size:22px; margin-bottom:6px; }
+    .subtitle { color:#666; font-size:14px; margin-bottom:24px; }
+    .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:30px; }
+    .stat-card { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:14px; padding:18px; }
+    .stat-label { font-size:12px; color:#666; text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+    .stat-value { font-size:28px; font-weight:700; color:#a855f7; }
+    .section { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:16px; padding:20px; margin-bottom:20px; }
+    .section-title { font-size:16px; font-weight:600; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+    .add-user-form { display:grid; grid-template-columns:1fr 1fr 1fr 1fr auto; gap:10px; align-items:end; }
+    .form-group label { font-size:12px; color:#888; display:block; margin-bottom:5px; }
+    .form-group input { width:100%; padding:10px 12px; background:#0f0f0f; border:1.5px solid #2a2a2a; border-radius:8px; color:#fff; font-size:13px; outline:none; }
+    .form-group input:focus { border-color:#a855f7; }
+    .btn { padding:10px 18px; border:none; border-radius:8px; cursor:pointer; font-size:13px; font-weight:500; }
+    .btn-purple { background:linear-gradient(90deg,#a855f7,#ec4899); color:#fff; }
+    .btn-purple:hover { opacity:0.88; }
+    .btn-red { background:#7f1d1d; color:#fca5a5; }
+    .btn-red:hover { background:#991b1b; }
+    .btn-green { background:#14532d; color:#86efac; }
+    .btn-green:hover { background:#166534; }
+    .btn-yellow { background:#713f12; color:#fde68a; }
+    .btn-yellow:hover { background:#92400e; }
+    .btn-sm { padding:5px 10px; font-size:12px; }
+    table { width:100%; border-collapse:collapse; }
+    th { text-align:left; font-size:12px; color:#555; text-transform:uppercase; letter-spacing:1px; padding:10px 12px; border-bottom:1px solid #2a2a2a; }
+    td { padding:12px; border-bottom:1px solid #1a1a1a; font-size:13px; vertical-align:middle; }
+    tr:hover td { background:#1f1f1f; }
+    .badge { padding:3px 8px; border-radius:20px; font-size:11px; font-weight:600; }
+    .badge-active { background:#0a2a0a; color:#4ade80; }
+    .badge-blocked { background:#2a0a0a; color:#f87171; }
+    .actions { display:flex; gap:6px; flex-wrap:wrap; }
+    .points-input { width:70px; padding:4px 8px; background:#0f0f0f; border:1px solid #2a2a2a; border-radius:6px; color:#fff; font-size:12px; text-align:center; outline:none; }
+    .flag { font-size:16px; }
+    .search-bar { width:100%; padding:10px 14px; background:#0f0f0f; border:1.5px solid #2a2a2a; border-radius:10px; color:#fff; font-size:14px; outline:none; margin-bottom:16px; }
+    .search-bar:focus { border-color:#a855f7; }
+    .toast { position:fixed; bottom:24px; right:24px; background:#1a2a1a; border:1px solid #166534; color:#4ade80; padding:12px 20px; border-radius:10px; font-size:13px; display:none; z-index:999; }
+    @media(max-width:768px) { .stats-grid{grid-template-columns:1fr 1fr;} .add-user-form{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🔍 UserChecker Pro — Admin</div>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+</header>
+
+<main>
+  <h2>Admin Panel</h2>
+  <p class="subtitle">Users manage karein, points add/remove karein</p>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Total Users</div>
+      <div class="stat-value" id="statUsers">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Blocked Users</div>
+      <div class="stat-value" id="statBlocked" style="color:#f87171;">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Points</div>
+      <div class="stat-value" id="statPoints" style="color:#4ade80;">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Checked</div>
+      <div class="stat-value" id="statChecked" style="color:#60a5fa;">0</div>
+    </div>
+  </div>
+
+  <!-- Add User -->
+  <div class="section">
+    <div class="section-title">➕ Naya User Add Karein</div>
+    <div class="add-user-form">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="newUsername" placeholder="username"/>
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="newEmail" placeholder="email@example.com"/>
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="newPassword" placeholder="password"/>
+      </div>
+      <div class="form-group">
+        <label>Points</label>
+        <input type="number" id="newPoints" placeholder="100" value="0"/>
+      </div>
+      <button class="btn btn-purple" onclick="addUser()">Add User</button>
+    </div>
+  </div>
+
+  <!-- Users Table -->
+  <div class="section">
+    <div class="section-title">👥 All Users (<span id="userCount">0</span>)</div>
+    <input type="text" class="search-bar" placeholder="🔍 Username, email ya country se search karein..." oninput="filterUsers(this.value)"/>
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Country</th>
+            <th>Points</th>
+            <th>Checked</th>
+            <th>Status</th>
+            <th>Joined</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="usersTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const token = localStorage.getItem('token');
+  if (!token) window.location.href = '/login';
+
+  let allUsers = [];
+
+  async function loadStats() {
+    try {
+      const res = await fetch('/api/admin/stats', { headers: { 'Authorization': 'Bearer ' + token } });
+      const data = await res.json();
+      if (data.success) {
+        document.getElementById('statUsers').textContent = data.stats.totalUsers;
+        document.getElementById('statBlocked').textContent = data.stats.blockedUsers;
+        document.getElementById('statPoints').textContent = data.stats.totalPoints;
+        document.getElementById('statChecked').textContent = data.stats.totalChecked;
+      }
+    } catch (e) {}
+  }
+
+  async function loadUsers() {
+    try {
+      const res = await fetch('/api/admin/users', { headers: { 'Authorization': 'Bearer ' + token } });
+      const data = await res.json();
+      if (data.success) {
+        allUsers = data.users;
+        renderUsers(allUsers);
+      } else {
+        alert('Access denied. Admin login karo.');
+        window.location.href = '/login';
+      }
+    } catch (e) { console.error(e); }
+  }
+
+  function renderUsers(users) {
+    document.getElementById('userCount').textContent = users.length;
+    const tbody = document.getElementById('usersTableBody');
+    if (users.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#555;padding:30px;">Koi user nahi mila</td></tr>';
+      return;
+    }
+    tbody.innerHTML = users.map((u, i) => `
+      <tr>
+        <td style="color:#555;">${i + 1}</td>
+        <td style="font-weight:600;">@${u.username}</td>
+        <td style="color:#888;">${u.email}</td>
+        <td>
+          <span title="${u.country || 'Unknown'}">${u.countryCode ? '🌍' : '🌐'} ${u.country || 'Unknown'}</span>
+        </td>
+        <td>
+          <span style="color:#a855f7;font-weight:700;">${u.points}</span>
+        </td>
+        <td style="color:#60a5fa;">${u.totalChecked || 0}</td>
+        <td>
+          <span class="badge ${u.isBlocked ? 'badge-blocked' : 'badge-active'}">
+            ${u.isBlocked ? 'Blocked' : 'Active'}
+          </span>
+        </td>
+        <td style="color:#555;">${new Date(u.createdAt).toLocaleDateString()}</td>
+        <td>
+          <div class="actions">
+            <input type="number" class="points-input" id="pts_${u._id}" placeholder="pts" min="1"/>
+            <button class="btn btn-green btn-sm" onclick="addPoints('${u._id}')">+Pts</button>
+            <button class="btn btn-yellow btn-sm" onclick="removePoints('${u._id}')">-Pts</button>
+            <button class="btn btn-${u.isBlocked ? 'green' : 'red'} btn-sm" onclick="toggleBlock('${u._id}')">
+              ${u.isBlocked ? 'Unblock' : 'Block'}
+            </button>
+            <button class="btn btn-red btn-sm" onclick="deleteUser('${u._id}', '${u.username}')">Delete</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  function filterUsers(query) {
+    const q = query.toLowerCase();
+    const filtered = allUsers.filter(u =>
+      u.username.toLowerCase().includes(q) ||
+      u.email.toLowerCase().includes(q) ||
+      (u.country || '').toLowerCase().includes(q)
+    );
+    renderUsers(filtered);
+  }
+
+  async function addUser() {
+    const username = document.getElementById('newUsername').value.trim();
+    const email = document.getElementById('newEmail').value.trim();
+    const password = document.getElementById('newPassword').value;
+    const points = document.getElementById('newPoints').value || 0;
+    if (!username || !email || !password) { showToast('Sab fields fill karo', 'error'); return; }
+    const res = await fetch('/api/admin/users/add', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer ' + token},
+      body: JSON.stringify({ username, email, password, points: parseInt(points) })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('User add ho gaya!');
+      document.getElementById('newUsername').value = '';
+      document.getElementById('newEmail').value = '';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('newPoints').value = '0';
+      loadUsers(); loadStats();
+    } else { showToast(data.message, 'error'); }
+  }
+
+  async function addPoints(userId) {
+    const pts = document.getElementById('pts_' + userId).value;
+    if (!pts || pts < 1) { showToast('Points daalo', 'error'); return; }
+    const res = await fetch(`/api/admin/users/${userId}/points/add`, {
+      method:'PUT',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer ' + token},
+      body: JSON.stringify({ points: parseInt(pts) })
+    });
+    const data = await res.json();
+    if (data.success) { showToast(`${pts} points add ho gaye! New balance: ${data.points}`); loadUsers(); loadStats(); }
+  }
+
+  async function removePoints(userId) {
+    const pts = document.getElementById('pts_' + userId).value;
+    if (!pts || pts < 1) { showToast('Points daalo', 'error'); return; }
+    const res = await fetch(`/api/admin/users/${userId}/points/remove`, {
+      method:'PUT',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer ' + token},
+      body: JSON.stringify({ points: parseInt(pts) })
+    });
+    const data = await res.json();
+    if (data.success) { showToast(`${pts} points remove ho gaye! New balance: ${data.points}`); loadUsers(); loadStats(); }
+  }
+
+  async function toggleBlock(userId) {
+    const res = await fetch(`/api/admin/users/${userId}/block`, {
+      method:'PUT',
+      headers:{'Authorization':'Bearer ' + token}
+    });
+    const data = await res.json();
+    if (data.success) { showToast(data.message); loadUsers(); loadStats(); }
+  }
+
+  async function deleteUser(userId, username) {
+    if (!confirm(`@${username} ko delete karna chahte hain?`)) return;
+    const res = await fetch(`/api/admin/users/${userId}`, {
+      method:'DELETE',
+      headers:{'Authorization':'Bearer ' + token}
+    });
+    const data = await res.json();
+    if (data.success) { showToast('User delete ho gaya'); loadUsers(); loadStats(); }
+  }
+
+  function logout() {
+    localStorage.clear();
+    window.location.href = '/login';
+  }
+
+  function showToast(msg, type) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.style.background = type === 'error' ? '#2a0a0a' : '#0a2a0a';
+    toast.style.borderColor = type === 'error' ? '#991b1b' : '#166534';
+    toast.style.color = type === 'error' ? '#f87171' : '#4ade80';
+    toast.style.display = 'block';
+    setTimeout(() => toast.style.display = 'none', 3000);
+  }
+
+  loadUsers();
+  loadStats();
+</script>
+</body>
+</html>

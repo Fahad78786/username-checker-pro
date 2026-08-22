@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UserChecker Pro</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Segoe UI',sans-serif; background:#0f0f0f; color:#fff; min-height:100vh; }
+    header { background:#1a1a1a; border-bottom:1px solid #2a2a2a; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+    .logo { font-size:20px; font-weight:700; background:linear-gradient(90deg,#a855f7,#ec4899); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .user-info { display:flex; align-items:center; gap:12px; }
+    .points-badge { background:#1e1030; border:1px solid #a855f7; color:#a855f7; padding:5px 14px; border-radius:20px; font-weight:700; font-size:14px; }
+    .logout-btn { background:transparent; border:1px solid #333; color:#888; padding:5px 14px; border-radius:8px; cursor:pointer; font-size:13px; }
+    .logout-btn:hover { color:#fff; border-color:#555; }
+    main { max-width:800px; margin:0 auto; padding:30px 20px 60px; }
+    h1 { font-size:24px; font-weight:700; margin-bottom:6px; }
+    .subtitle { color:#666; font-size:14px; margin-bottom:24px; }
+    .card { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:16px; padding:22px; margin-bottom:18px; }
+    .card-title { font-size:14px; font-weight:600; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:16px; }
+    .platform-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+    .platform-btn { background:#0f0f0f; border:2px solid #2a2a2a; border-radius:12px; padding:14px 8px; cursor:pointer; text-align:center; transition:all 0.2s; }
+    .platform-btn:hover { border-color:#555; }
+    .platform-btn.selected { border-color:#a855f7; background:#1e1030; }
+    .platform-btn .p-icon { font-size:24px; display:block; margin-bottom:6px; }
+    .platform-btn .p-name { font-size:12px; color:#888; }
+    .platform-btn.selected .p-name { color:#a855f7; }
+    label { font-size:13px; color:#888; display:block; margin-bottom:6px; }
+    input[type=text], input[type=number] { width:100%; padding:12px 15px; background:#0f0f0f; border:1.5px solid #2a2a2a; border-radius:10px; color:#fff; font-size:14px; outline:none; margin-bottom:16px; transition:border-color 0.2s; }
+    input:focus { border-color:#a855f7; }
+    .row2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .points-info { background:#0f0f12; border:1px solid #2a2a3a; border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:13px; color:#888; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+    .start-btn { width:100%; padding:14px; background:linear-gradient(90deg,#a855f7,#ec4899); border:none; border-radius:12px; color:#fff; font-size:16px; font-weight:700; cursor:pointer; transition:opacity 0.2s; }
+    .start-btn:hover { opacity:0.88; }
+    .start-btn:disabled { opacity:0.4; cursor:not-allowed; }
+    .progress-box { display:none; }
+    .progress-bar-wrap { background:#0f0f0f; border-radius:30px; height:10px; margin:12px 0; overflow:hidden; }
+    .progress-bar { height:100%; background:linear-gradient(90deg,#a855f7,#ec4899); border-radius:30px; transition:width 0.3s; width:0%; }
+    .progress-text { display:flex; justify-content:space-between; font-size:13px; color:#666; }
+    .stop-btn { margin-top:12px; width:100%; padding:10px; background:#2a0a0a; border:1px solid #991b1b; color:#f87171; border-radius:10px; cursor:pointer; font-size:14px; font-weight:600; }
+    .results-box { display:none; }
+    .results-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px; }
+    .results-header h3 { font-size:16px; }
+    .copy-all-btn { padding:8px 18px; background:#14532d; border:1px solid #166534; color:#4ade80; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; }
+    .username-list { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:8px; max-height:500px; overflow-y:auto; padding-right:4px; }
+    .u-item { background:#0f2a0f; border:1px solid #166534; border-radius:8px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .u-name { font-size:13px; font-weight:600; color:#4ade80; word-break:break-all; }
+    .copy-btn { background:transparent; border:1px solid #166534; color:#4ade80; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:11px; white-space:nowrap; }
+    .copy-btn:hover { background:#14532d; }
+    .copy-btn.copied { background:#14532d; }
+    .no-results { text-align:center; padding:30px; color:#555; font-size:14px; }
+    .error-box { background:#2a0a0a; border:1px solid #991b1b; border-radius:10px; padding:12px 16px; color:#f87171; font-size:14px; margin-bottom:16px; display:none; }
+    .stats-row { display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+    .stat { background:#0f0f0f; border:1px solid #2a2a2a; border-radius:10px; padding:10px 16px; font-size:13px; flex:1; min-width:100px; text-align:center; }
+    .stat strong { display:block; font-size:20px; font-weight:700; }
+    .stat.green strong { color:#4ade80; }
+    .stat.purple strong { color:#a855f7; }
+    .stat.yellow strong { color:#fbbf24; }
+    .no-points-box { background:#1a0a00; border:1px solid #92400e; border-radius:12px; padding:20px; text-align:center; margin-bottom:16px; display:none; }
+    .no-points-box p { color:#fbbf24; margin-bottom:6px; font-weight:600; }
+    .no-points-box small { color:#666; font-size:13px; }
+    @media(max-width:500px) { .platform-grid{grid-template-columns:repeat(2,1fr);} .row2{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+<header>
+  <div class="logo">🔍 UserChecker Pro</div>
+  <div class="user-info">
+    <span id="usernameDisplay" style="color:#aaa;font-size:14px;"></span>
+    <span class="points-badge">💎 <span id="pointsDisplay">0</span> Points</span>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+</header>
+<main>
+  <h1>Username Finder</h1>
+  <p class="subtitle">Platform select karo → word likho → quantity set karo → available usernames mil jaenge!</p>
+  <div class="no-points-box" id="noPointsBox">
+    <p>⚠️ Points nahi hain!</p>
+    <small>Admin se contact karo points lene ke liye</small>
+  </div>
+  <div class="error-box" id="errorBox"></div>
+  <div class="card">
+    <div class="card-title">1. Platform Select Karo</div>
+    <div class="platform-grid">
+      <div class="platform-btn selected" onclick="selectPlatform('instagram',this)">
+        <span class="p-icon">📸</span><span class="p-name">Instagram</span>
+      </div>
+      <div class="platform-btn" onclick="selectPlatform('facebook',this)">
+        <span class="p-icon">👤</span><span class="p-name">Facebook</span>
+      </div>
+      <div class="platform-btn" onclick="selectPlatform('twitter',this)">
+        <span class="p-icon">🐦</span><span class="p-name">Twitter/X</span>
+      </div>
+      <div class="platform-btn" onclick="selectPlatform('threads',this)">
+        <span class="p-icon">🧵</span><span class="p-name">Threads</span>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">2. Word aur Quantity Set Karo</div>
+    <div class="row2">
+      <div>
+        <label>Base Word (jaise: ali, khan, star)</label>
+        <input type="text" id="baseWord" placeholder="apna word likhein..." maxlength="15"/>
+      </div>
+      <div>
+        <label>Kitne available usernames chahiye? (max 1000)</label>
+        <input type="number" id="quantity" placeholder="100" min="1" max="1000" value="100"/>
+      </div>
+    </div>
+    <div class="points-info">
+      <span>💡 50 points = 1000 usernames check</span>
+      <span>Aapke paas: <span id="pointsInfo">0</span> points = <span id="checksAllowed">0</span> checks</span>
+    </div>
+    <button class="start-btn" onclick="startBulkCheck()" id="startBtn">🚀 Available Usernames Dhundho</button>
+  </div>
+  <div class="card progress-box" id="progressBox">
+    <div class="card-title">Checking... ⚡</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="progress-text">
+      <span id="progressText">0 checked</span>
+      <span id="progressFound" style="color:#4ade80;">0 available found</span>
+    </div>
+    <button class="stop-btn" onclick="stopCheck()">⛔ Rok Do</button>
+  </div>
+  <div class="card results-box" id="resultsBox">
+    <div class="results-header">
+      <h3>✅ Available Usernames</h3>
+      <button class="copy-all-btn" onclick="copyAll()">📋 Sab Copy Karo</button>
+    </div>
+    <div class="stats-row">
+      <div class="stat green"><strong id="statFound">0</strong>Available</div>
+      <div class="stat purple"><strong id="statChecked">0</strong>Checked</div>
+      <div class="stat yellow"><strong id="statPoints">0</strong>Points Bache</div>
+    </div>
+    <div class="username-list" id="usernameList"></div>
+  </div>
+</main>
+<script>
+  const token = localStorage.getItem('token');
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (!token) window.location.href = '/login';
+
+  let currentPoints = user.points || 0;
+  let selectedPlatform = 'instagram';
+  let isStopped = false;
+  let availableUsernames = [];
+  let totalChecked = 0;
+
+  document.getElementById('usernameDisplay').textContent = '@' + (user.username || '');
+  updatePoints(currentPoints);
+
+  function updatePoints(pts) {
+    currentPoints = pts;
+    document.getElementById('pointsDisplay').textContent = pts;
+    document.getElementById('pointsInfo').textContent = pts;
+    document.getElementById('checksAllowed').textContent = pts * 20;
+    if (pts === 0) document.getElementById('noPointsBox').style.display = 'block';
+    else document.getElementById('noPointsBox').style.display = 'none';
+  }
+
+  function selectPlatform(platform, el) {
+    document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedPlatform = platform;
+  }
+
+  function logout() { localStorage.clear(); window.location.href = '/login'; }
+
+  function showError(msg) {
+    const box = document.getElementById('errorBox');
+    box.textContent = '⚠️ ' + msg;
+    box.style.display = 'block';
+    setTimeout(() => box.style.display = 'none', 5000);
+  }
+
+  function generateUsernames(base, count) {
+    const clean = base.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+    const list = new Set();
+    const suffixes = ['786','92','01','007','123','456','789','999','000','111','222','333','444','555','100','200','300','400','500','600','700','800','900','2024','2025','2026','pk','pro','og','vip','xo','xx','yt','ff','hd','tv','bd','official','real','king','queen','star','boy','girl','bhai','yaar','jaan'];
+    const prefixes = ['the','real','its','iam','mr','ms','sir','hey','yo','im'];
+    const specials = ['_pk','_786','_pro','_official','_real','_yt','_ff','_pubg','_gamer','_op','_bhai','_jaan','_desi','.pk','.786','.pro'];
+
+    for (let i = 0; list.size < count * 4 && i < 200; i++) {
+      const num = Math.floor(Math.random() * 9000) + 100;
+      const num2 = Math.floor(Math.random() * 99) + 1;
+      list.add(clean + num);
+      list.add(clean + '_' + num2);
+      list.add(clean + num2);
+      suffixes.forEach(s => { if (list.size < count * 4) list.add(clean + s); if (list.size < count * 4) list.add(clean + '_' + s); });
+      prefixes.forEach(p => { if (list.size < count * 4) list.add(p + '_' + clean); if (list.size < count * 4) list.add(p + '.' + clean); });
+      specials.forEach(s => { if (list.size < count * 4) list.add(clean + s); });
+    }
+    return [...list].filter(u => u.length >= 3 && u.length <= 30 && /^[a-zA-Z0-9._]+$/.test(u)).slice(0, count * 2);
+  }
+
+  async function startBulkCheck() {
+    const baseWord = document.getElementById('baseWord').value.trim();
+    const quantity = parseInt(document.getElementById('quantity').value) || 100;
+    const errorBox = document.getElementById('errorBox');
+    errorBox.style.display = 'none';
+
+    if (!baseWord) { showError('Base word likhein'); return; }
+    if (quantity < 1 || quantity > 1000) { showError('Quantity 1 se 1000 ke beech ho'); return; }
+    if (currentPoints < 1) { showError('Points nahi hain! Admin se contact karo.'); return; }
+
+    const pointsNeeded = Math.ceil(quantity / 20);
+    if (currentPoints < pointsNeeded) {
+      showError(`${quantity} checks ke liye ${pointsNeeded} points chahiye. Aapke paas sirf ${currentPoints} hain.`);
+      return;
+    }
+
+    isStopped = false;
+    availableUsernames = [];
+    totalChecked = 0;
+
+    document.getElementById('startBtn').disabled = true;
+    document.getElementById('progressBox').style.display = 'block';
+    document.getElementById('resultsBox').style.display = 'none';
+    document.getElementById('usernameList').innerHTML = '';
+    document.getElementById('progressBar').style.width = '0%';
+
+    const allUsernames = generateUsernames(baseWord, quantity * 2);
+    const toCheck = allUsernames.slice(0, quantity * 2);
+    const total = toCheck.length;
+
+    const batchSize = 10;
+    for (let i = 0; i < total && availableUsernames.length < quantity; i += batchSize) {
+      if (isStopped) break;
+      const batch = toCheck.slice(i, i + batchSize);
+      await checkBatch(batch, total, pointsNeeded);
+      await sleep(300);
+    }
+
+    document.getElementById('startBtn').disabled = false;
+    document.getElementById('progressBox').style.display = 'none';
+    showFinalResults();
+  }
+
+  async function checkBatch(batch, total, pointsNeeded) {
+    try {
+      const res = await fetch('/api/check/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ usernames: batch, platform: selectedPlatform, pointsNeeded })
+      });
+      const data = await res.json();
+      if (!data.success) { showError(data.message); isStopped = true; return; }
+
+      updatePoints(data.remainingPoints);
+      totalChecked += batch.length;
+
+      data.results.forEach(r => {
+        if (r.available === true) {
+          availableUsernames.push(r.username);
+          addUsernameToList(r.username);
+        }
+      });
+
+      const pct = Math.min(Math.round((totalChecked / total) * 100), 100);
+      document.getElementById('progressBar').style.width = pct + '%';
+      document.getElementById('progressText').textContent = totalChecked + ' checked';
+      document.getElementById('progressFound').textContent = availableUsernames.length + ' available mili';
+      document.getElementById('resultsBox').style.display = 'block';
+    } catch (e) {
+      showError('Network error');
+    }
+  }
+
+  function addUsernameToList(username) {
+    const list = document.getElementById('usernameList');
+    const div = document.createElement('div');
+    div.className = 'u-item';
+    div.innerHTML = '<span class="u-name">@' + username + '</span><button class="copy-btn" onclick="copyOne(this,\'' + username + '\')">Copy</button>';
+    list.appendChild(div);
+  }
+
+  function showFinalResults() {
+    document.getElementById('statFound').textContent = availableUsernames.length;
+    document.getElementById('statChecked').textContent = totalChecked;
+    document.getElementById('statPoints').textContent = currentPoints;
+    document.getElementById('resultsBox').style.display = 'block';
+    if (availableUsernames.length === 0) {
+      document.getElementById('usernameList').innerHTML = '<div class="no-results">😔 Koi available username nahi mila — naya word try karo</div>';
+    }
+  }
+
+  function stopCheck() {
+    isStopped = true;
+    document.getElementById('startBtn').disabled = false;
+    document.getElementById('progressBox').style.display = 'none';
+    showFinalResults();
+  }
+
+  function copyOne(btn, username) {
+    navigator.clipboard.writeText(username).then(() => {
+      btn.textContent = '✓';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  function copyAll() {
+    if (!availableUsernames.length) { showError('Koi username nahi copy karne ke liye'); return; }
+    navigator.clipboard.writeText(availableUsernames.join('\n')).then(() => {
+      const btn = document.querySelector('.copy-all-btn');
+      btn.textContent = '✓ Sab Copy Ho Gaye!';
+      setTimeout(() => btn.textContent = '📋 Sab Copy Karo', 2000);
+    });
+  }
+
+  function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+</script>
+</body>
+</html>

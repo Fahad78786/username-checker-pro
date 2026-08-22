@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login — UserChecker Pro</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Segoe UI',sans-serif; background:#0f0f0f; color:#fff; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
+    .card { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:20px; padding:40px; width:100%; max-width:420px; }
+    .logo { text-align:center; font-size:28px; font-weight:700; background:linear-gradient(90deg,#a855f7,#ec4899); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:8px; }
+    .subtitle { text-align:center; color:#666; font-size:14px; margin-bottom:30px; }
+    label { font-size:13px; color:#888; display:block; margin-bottom:6px; }
+    input { width:100%; padding:12px 15px; background:#0f0f0f; border:1.5px solid #2a2a2a; border-radius:10px; color:#fff; font-size:14px; outline:none; margin-bottom:16px; transition:border-color 0.2s; }
+    input:focus { border-color:#a855f7; }
+    button { width:100%; padding:13px; background:linear-gradient(90deg,#a855f7,#ec4899); border:none; border-radius:10px; color:#fff; font-size:15px; font-weight:600; cursor:pointer; }
+    button:hover { opacity:0.88; }
+    .msg { text-align:center; font-size:13px; margin-top:16px; padding:10px; border-radius:8px; display:none; }
+    .msg.error { background:#2a0a0a; color:#f87171; }
+    .msg.success { background:#0a2a0a; color:#4ade80; }
+    .bottom { text-align:center; margin-top:20px; font-size:13px; color:#666; }
+    .bottom a { color:#a855f7; text-decoration:none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">🔍 UserChecker Pro</div>
+    <p class="subtitle">Login karein</p>
+    <label>Email ya Username</label>
+    <input type="text" id="email" placeholder="email@example.com"/>
+    <label>Password</label>
+    <input type="password" id="password" placeholder="Password"/>
+    <button onclick="login()">Login</button>
+    <div class="msg" id="msg"></div>
+    <div class="bottom">Account nahi hai? <a href="/signup">Signup karein</a></div>
+  </div>
+  <script>
+    async function login() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      if (!email || !password) { showMsg('Sab fields fill karo', 'error'); return; }
+      try {
+        const res = await fetch('/api/auth/login', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (data.success) {
+          localStorage.setItem('token', data.token);
+          if (data.isAdmin) {
+            window.location.href = '/admin';
+          } else {
+            localStorage.setItem('user', JSON.stringify(data.user));
+            window.location.href = '/';
+          }
+        } else {
+          showMsg(data.message, 'error');
+        }
+      } catch (e) { showMsg('Server error', 'error'); }
+    }
+    function showMsg(text, type) {
+      const msg = document.getElementById('msg');
+      msg.textContent = text;
+      msg.className = 'msg ' + type;
+      msg.style.display = 'block';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+  </script>
+</body>
+</html>
