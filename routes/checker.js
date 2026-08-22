@@ -91,6 +91,7 @@ async function checkOnePlatform(platform, username) {
 
     return { status: 'unknown', displayName: null };
   } catch (err) {
+    console.error(`Proxy check failed for ${platform}:`, err.message);
     return { status: 'unknown', displayName: null, error: err.message };
   }
 }
