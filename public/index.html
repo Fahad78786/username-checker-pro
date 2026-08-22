@@ -56,7 +56,8 @@
     table.result-table tr:hover td { background:#1f1f1f; }
     .status-pill { padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; display:inline-block; }
     .status-available { background:#0a2a0a; color:#4ade80; }
-    .status-taken { background:#2a0a0a; color:#f87171; }
+    .status-active { background:#0a1a2a; color:#60a5fa; }
+    .status-suspended { background:#2a0a0a; color:#f87171; }
     .status-unknown { background:#2a2a0a; color:#fbbf24; }
     .table-scroll { max-height:500px; overflow-y:auto; }
     .table-scroll::-webkit-scrollbar { width:6px; }
@@ -282,7 +283,7 @@
 
   function showFinalResults(platforms) {
     const availableCount = lastResults.filter(r =>
-      platforms.some(p => r[p] === true)
+      platforms.some(p => r[p] === 'available')
     ).length;
 
     document.getElementById('statAvailable').textContent = availableCount;
@@ -305,17 +306,26 @@
     body.innerHTML = lastResults.map(r => {
       const cells = platforms.map(p => {
         const val = r[p];
-        const cls = val === true ? 'status-available' : val === false ? 'status-taken' : 'status-unknown';
-        const txt = val === true ? '✅ Available' : val === false ? '❌ Taken' : '⚠️ Unknown';
+        const name = r[p + '_name'];
+        let cls = 'status-unknown', txt = '⚠️ Unknown';
+        if (val === 'available') { cls = 'status-available'; txt = '✅ Available'; }
+        else if (val === 'active') { cls = 'status-active'; txt = '🟢 Active' + (name ? ` — ${escapeHtml(name)}` : ''); }
+        else if (val === 'suspended') { cls = 'status-suspended'; txt = '🔴 Suspended'; }
         return `<td><span class="status-pill ${cls}">${txt}</span></td>`;
       }).join('');
       return `<tr><td style="font-weight:600;">@${r.username}</td>${cells}</tr>`;
     }).join('');
   }
 
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
   function exportResults() {
     const platforms = [...selectedPlatforms];
-    const available = lastResults.filter(r => platforms.some(p => r[p] === true)).map(r => r.username);
+    const available = lastResults.filter(r => platforms.some(p => r[p] === 'available')).map(r => r.username);
     if (available.length === 0) { showError('No available usernames to copy'); return; }
     navigator.clipboard.writeText(available.join('\n')).then(() => {
       const btn = document.querySelector('.export-btn');

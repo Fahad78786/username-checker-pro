@@ -16,14 +16,43 @@ function userAuth(req, res, next) {
   }
 }
 
-// Real availability check for a single platform
+// Try to extract the public display name from the page's <title> or meta tags
+function extractDisplayName(platform, body) {
+  try {
+    if (platform === 'instagram') {
+      // Instagram <title> looks like: "Full Name (@username) • Instagram photos and videos"
+      const titleMatch = body.match(/<title>(.*?)<\/title>/i);
+      if (titleMatch && titleMatch[1]) {
+        const raw = titleMatch[1];
+        const nameMatch = raw.match(/^(.*?)\s*\(@/);
+        if (nameMatch && nameMatch[1]) return nameMatch[1].trim();
+      }
+      const ogMatch = body.match(/<meta property="og:title" content="(.*?)"/i);
+      if (ogMatch && ogMatch[1]) {
+        const nameMatch = ogMatch[1].match(/^(.*?)\s*\(@/);
+        if (nameMatch && nameMatch[1]) return nameMatch[1].trim();
+      }
+    }
+    if (platform === 'threads') {
+      const titleMatch = body.match(/<title>(.*?)<\/title>/i);
+      if (titleMatch && titleMatch[1]) {
+        const raw = titleMatch[1];
+        const nameMatch = raw.match(/^(.*?)\s*\(@/);
+        if (nameMatch && nameMatch[1]) return nameMatch[1].trim();
+      }
+    }
+  } catch (e) {}
+  return null;
+}
+
+// Returns { status: 'available'|'active'|'suspended'|'unknown', displayName: string|null }
 async function checkOnePlatform(platform, username) {
   const urls = {
     instagram: `https://www.instagram.com/${username}/`,
     threads: `https://www.threads.net/@${username}`,
   };
   const url = urls[platform];
-  if (!url) return null;
+  if (!url) return { status: 'unknown', displayName: null };
 
   try {
     const response = await axios.get(url, {
@@ -40,34 +69,40 @@ async function checkOnePlatform(platform, username) {
 
     const status = response.status;
     const body = response.data?.toString() || '';
+    const bodyLower = body.toLowerCase();
 
     if (platform === 'instagram') {
       if (status === 404 || body.includes("Sorry, this page") || body.includes("isn't available"))
-        return true; // available
+        return { status: 'available', displayName: null };
+      if (bodyLower.includes('this account has been disabled') || bodyLower.includes('account suspended') || bodyLower.includes('account has been restricted'))
+        return { status: 'suspended', displayName: null };
       if (status === 200 && body.length > 10000)
-        return false; // taken
-      return null; // unknown
+        return { status: 'active', displayName: extractDisplayName('instagram', body) };
+      return { status: 'unknown', displayName: null };
     }
 
     if (platform === 'threads') {
       if (status === 404 || body.includes("isn't available"))
-        return true;
+        return { status: 'available', displayName: null };
+      if (bodyLower.includes('account has been disabled') || bodyLower.includes('account suspended'))
+        return { status: 'suspended', displayName: null };
       if (status === 200 && body.length > 5000)
-        return false;
-      return null;
+        return { status: 'active', displayName: extractDisplayName('threads', body) };
+      return { status: 'unknown', displayName: null };
     }
 
-    return null;
+    return { status: 'unknown', displayName: null };
   } catch (err) {
-    return null;
+    return { status: 'unknown', displayName: null };
   }
 }
 
-// Check one username across the requested platforms
 async function checkUsernameAllPlatforms(username, platforms) {
   const result = { username };
   await Promise.all(platforms.map(async (p) => {
-    result[p] = await checkOnePlatform(p, username);
+    const r = await checkOnePlatform(p, username);
+    result[p] = r.status;
+    result[p + '_name'] = r.displayName;
   }));
   return result;
 }
@@ -124,32 +159,6 @@ router.post('/bulk', userAuth, async (req, res) => {
       requestedCount: usernames.length
     });
 
-  } catch (err) {
-    res.json({ success: false, message: 'Server error: ' + err.message });
-  }
-});
-
-// Single username check (kept for backward compatibility)
-router.post('/username', userAuth, async (req, res) => {
-  try {
-    const { username } = req.body;
-    if (!username) return res.json({ success: false, message: 'Enter a username' });
-
-    const { data: user, error: userErr } = await supabase.from('users').select('*').eq('id', req.userId).single();
-    if (userErr || !user) return res.json({ success: false, message: 'User not found' });
-    if (user.is_blocked) return res.json({ success: false, message: 'Account is blocked' });
-    if (user.points < 2) return res.json({ success: false, message: 'Not enough points' });
-
-    const platforms = ['instagram', 'threads'];
-    const result = await checkUsernameAllPlatforms(username, platforms);
-
-    const newPoints = user.points - 2;
-    await supabase.from('users').update({
-      points: newPoints,
-      total_checked: (user.total_checked || 0) + 1
-    }).eq('id', req.userId);
-
-    res.json({ success: true, username, result, remainingPoints: newPoints });
   } catch (err) {
     res.json({ success: false, message: 'Server error: ' + err.message });
   }
