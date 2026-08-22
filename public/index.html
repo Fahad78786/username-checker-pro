@@ -13,53 +13,59 @@
     .points-badge { background:#1e1030; border:1px solid #a855f7; color:#a855f7; padding:5px 14px; border-radius:20px; font-weight:700; font-size:14px; }
     .logout-btn { background:transparent; border:1px solid #333; color:#888; padding:5px 14px; border-radius:8px; cursor:pointer; font-size:13px; }
     .logout-btn:hover { color:#fff; border-color:#555; }
-    main { max-width:800px; margin:0 auto; padding:30px 20px 60px; }
+    main { max-width:900px; margin:0 auto; padding:30px 20px 60px; }
     h1 { font-size:24px; font-weight:700; margin-bottom:6px; }
     .subtitle { color:#666; font-size:14px; margin-bottom:24px; }
     .card { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:16px; padding:22px; margin-bottom:18px; }
     .card-title { font-size:14px; font-weight:600; color:#888; text-transform:uppercase; letter-spacing:1px; margin-bottom:16px; }
-    .platform-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
-    .platform-btn { background:#0f0f0f; border:2px solid #2a2a2a; border-radius:12px; padding:14px 8px; cursor:pointer; text-align:center; transition:all 0.2s; }
+    .platform-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
+    .platform-btn { background:#0f0f0f; border:2px solid #2a2a2a; border-radius:12px; padding:16px; cursor:pointer; text-align:center; transition:all 0.2s; user-select:none; }
     .platform-btn:hover { border-color:#555; }
     .platform-btn.selected { border-color:#a855f7; background:#1e1030; }
-    .platform-btn .p-icon { font-size:24px; display:block; margin-bottom:6px; }
-    .platform-btn .p-name { font-size:12px; color:#888; }
+    .platform-btn .p-icon { font-size:26px; display:block; margin-bottom:8px; }
+    .platform-btn .p-name { font-size:13px; color:#888; font-weight:600; }
     .platform-btn.selected .p-name { color:#a855f7; }
     label { font-size:13px; color:#888; display:block; margin-bottom:6px; }
-    input[type=text], input[type=number] { width:100%; padding:12px 15px; background:#0f0f0f; border:1.5px solid #2a2a2a; border-radius:10px; color:#fff; font-size:14px; outline:none; margin-bottom:16px; transition:border-color 0.2s; }
-    input:focus { border-color:#a855f7; }
-    .row2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-    .points-info { background:#0f0f12; border:1px solid #2a2a3a; border-radius:10px; padding:12px 16px; margin-bottom:16px; font-size:13px; color:#888; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+    textarea { width:100%; min-height:180px; padding:14px 16px; background:#0f0f0f; border:1.5px solid #2a2a2a; border-radius:10px; color:#fff; font-size:13px; outline:none; resize:vertical; font-family:'Consolas',monospace; line-height:1.6; }
+    textarea:focus { border-color:#a855f7; }
+    .textarea-footer { display:flex; justify-content:space-between; align-items:center; margin-top:8px; font-size:12px; color:#666; }
+    .textarea-footer span.count { color:#a855f7; font-weight:600; }
+    .points-info { background:#0f0f12; border:1px solid #2a2a3a; border-radius:10px; padding:12px 16px; margin:16px 0; font-size:13px; color:#888; }
+    .points-info .info-row { display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; }
+    .points-info span.highlight { color:#a855f7; font-weight:700; }
     .start-btn { width:100%; padding:14px; background:linear-gradient(90deg,#a855f7,#ec4899); border:none; border-radius:12px; color:#fff; font-size:16px; font-weight:700; cursor:pointer; transition:opacity 0.2s; }
     .start-btn:hover { opacity:0.88; }
     .start-btn:disabled { opacity:0.4; cursor:not-allowed; }
     .progress-box { display:none; }
-    .progress-bar-wrap { background:#0f0f0f; border-radius:30px; height:10px; margin:12px 0; overflow:hidden; }
-    .progress-bar { height:100%; background:linear-gradient(90deg,#a855f7,#ec4899); border-radius:30px; transition:width 0.3s; width:0%; }
+    .progress-bar-wrap { background:#0f0f0f; border-radius:30px; height:12px; margin:12px 0; overflow:hidden; }
+    .progress-bar { height:100%; background:linear-gradient(90deg,#a855f7,#ec4899); border-radius:30px; transition:width 0.2s; width:0%; }
     .progress-text { display:flex; justify-content:space-between; font-size:13px; color:#666; }
-    .stop-btn { margin-top:12px; width:100%; padding:10px; background:#2a0a0a; border:1px solid #991b1b; color:#f87171; border-radius:10px; cursor:pointer; font-size:14px; font-weight:600; }
     .results-box { display:none; }
     .results-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px; }
     .results-header h3 { font-size:16px; }
-    .copy-all-btn { padding:8px 18px; background:#14532d; border:1px solid #166534; color:#4ade80; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; }
-    .username-list { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:8px; max-height:500px; overflow-y:auto; padding-right:4px; }
-    .u-item { background:#0f2a0f; border:1px solid #166534; border-radius:8px; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
-    .u-name { font-size:13px; font-weight:600; color:#4ade80; word-break:break-all; }
-    .copy-btn { background:transparent; border:1px solid #166534; color:#4ade80; padding:4px 10px; border-radius:6px; cursor:pointer; font-size:11px; white-space:nowrap; }
-    .copy-btn:hover { background:#14532d; }
-    .copy-btn.copied { background:#14532d; }
-    .no-results { text-align:center; padding:30px; color:#555; font-size:14px; }
-    .error-box { background:#2a0a0a; border:1px solid #991b1b; border-radius:10px; padding:12px 16px; color:#f87171; font-size:14px; margin-bottom:16px; display:none; }
+    .export-btn { padding:8px 18px; background:#14532d; border:1px solid #166534; color:#4ade80; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; }
+    .export-btn:hover { background:#166534; }
     .stats-row { display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
-    .stat { background:#0f0f0f; border:1px solid #2a2a2a; border-radius:10px; padding:10px 16px; font-size:13px; flex:1; min-width:100px; text-align:center; }
-    .stat strong { display:block; font-size:20px; font-weight:700; }
+    .stat { background:#0f0f0f; border:1px solid #2a2a2a; border-radius:10px; padding:10px 16px; font-size:12px; flex:1; min-width:90px; text-align:center; color:#888; }
+    .stat strong { display:block; font-size:22px; font-weight:700; margin-bottom:2px; }
     .stat.green strong { color:#4ade80; }
     .stat.purple strong { color:#a855f7; }
-    .stat.yellow strong { color:#fbbf24; }
+    table.result-table { width:100%; border-collapse:collapse; font-size:13px; }
+    table.result-table th { text-align:left; font-size:11px; color:#666; text-transform:uppercase; letter-spacing:0.5px; padding:10px; border-bottom:1px solid #2a2a2a; }
+    table.result-table td { padding:10px; border-bottom:1px solid #1a1a1a; }
+    table.result-table tr:hover td { background:#1f1f1f; }
+    .status-pill { padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; display:inline-block; }
+    .status-available { background:#0a2a0a; color:#4ade80; }
+    .status-taken { background:#2a0a0a; color:#f87171; }
+    .status-unknown { background:#2a2a0a; color:#fbbf24; }
+    .table-scroll { max-height:500px; overflow-y:auto; }
+    .table-scroll::-webkit-scrollbar { width:6px; }
+    .table-scroll::-webkit-scrollbar-thumb { background:#333; border-radius:3px; }
+    .error-box { background:#2a0a0a; border:1px solid #991b1b; border-radius:10px; padding:12px 16px; color:#f87171; font-size:14px; margin-bottom:16px; display:none; }
     .no-points-box { background:#1a0a00; border:1px solid #92400e; border-radius:12px; padding:20px; text-align:center; margin-bottom:16px; display:none; }
     .no-points-box p { color:#fbbf24; margin-bottom:6px; font-weight:600; }
     .no-points-box small { color:#666; font-size:13px; }
-    @media(max-width:500px) { .platform-grid{grid-template-columns:repeat(2,1fr);} .row2{grid-template-columns:1fr;} }
+    @media(max-width:500px) { table.result-table{font-size:11px;} table.result-table th,table.result-table td{padding:6px;} }
   </style>
 </head>
 <body>
@@ -72,82 +78,92 @@
   </div>
 </header>
 <main>
-  <h1>Username Finder</h1>
-  <p class="subtitle">Platform select karo → word likho → quantity set karo → available usernames mil jaenge!</p>
+  <h1>Username Checker</h1>
+  <p class="subtitle">Enter your usernames, choose platforms, and check real availability — up to 1000 at once.</p>
+
   <div class="no-points-box" id="noPointsBox">
-    <p>⚠️ Points nahi hain!</p>
-    <small>Admin se contact karo points lene ke liye</small>
+    <p>⚠️ You have no points!</p>
+    <small>Contact the admin to get points</small>
   </div>
+
   <div class="error-box" id="errorBox"></div>
+
+  <!-- Step 1: Platform -->
   <div class="card">
-    <div class="card-title">1. Platform Select Karo</div>
+    <div class="card-title">1. Select Platform(s)</div>
     <div class="platform-grid">
-      <div class="platform-btn selected" onclick="selectPlatform('instagram',this)">
+      <div class="platform-btn selected" id="btn-instagram" onclick="togglePlatform('instagram')">
         <span class="p-icon">📸</span><span class="p-name">Instagram</span>
       </div>
-      <div class="platform-btn" onclick="selectPlatform('facebook',this)">
-        <span class="p-icon">👤</span><span class="p-name">Facebook</span>
-      </div>
-      <div class="platform-btn" onclick="selectPlatform('twitter',this)">
-        <span class="p-icon">🐦</span><span class="p-name">Twitter/X</span>
-      </div>
-      <div class="platform-btn" onclick="selectPlatform('threads',this)">
+      <div class="platform-btn selected" id="btn-threads" onclick="togglePlatform('threads')">
         <span class="p-icon">🧵</span><span class="p-name">Threads</span>
       </div>
     </div>
   </div>
+
+  <!-- Step 2: Usernames -->
   <div class="card">
-    <div class="card-title">2. Word aur Quantity Set Karo</div>
-    <div class="row2">
-      <div>
-        <label>Base Word (jaise: ali, khan, star)</label>
-        <input type="text" id="baseWord" placeholder="apna word likhein..." maxlength="15"/>
-      </div>
-      <div>
-        <label>Kitne available usernames chahiye? (max 1000)</label>
-        <input type="number" id="quantity" placeholder="100" min="1" max="1000" value="100"/>
-      </div>
+    <div class="card-title">2. Enter Usernames (1 to 1000)</div>
+    <label>One username per line</label>
+    <textarea id="usernameList" placeholder="john_doe&#10;fahad786&#10;star_boy&#10;..." oninput="updateCount()"></textarea>
+    <div class="textarea-footer">
+      <span><span class="count" id="usernameCount">0</span> usernames entered</span>
+      <span>Max 1000</span>
     </div>
+
     <div class="points-info">
-      <span>💡 50 points = 1000 usernames check</span>
-      <span>Aapke paas: <span id="pointsInfo">0</span> points = <span id="checksAllowed">0</span> checks</span>
+      <div class="info-row">
+        <span>💡 1 point = 1 platform check per username</span>
+        <span>You have: <span class="highlight" id="pointsInfo">0</span> points</span>
+      </div>
+      <div style="margin-top:6px; color:#666; font-size:12px;" id="costPreview">Estimated cost: 0 points</div>
     </div>
-    <button class="start-btn" onclick="startBulkCheck()" id="startBtn">🚀 Available Usernames Dhundho</button>
+
+    <button class="start-btn" onclick="startCheck()" id="startBtn">🚀 Check Usernames</button>
   </div>
+
+  <!-- Progress -->
   <div class="card progress-box" id="progressBox">
     <div class="card-title">Checking... ⚡</div>
-    <div class="progress-bar-wrap">
-      <div class="progress-bar" id="progressBar"></div>
-    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
     <div class="progress-text">
       <span id="progressText">0 checked</span>
-      <span id="progressFound" style="color:#4ade80;">0 available found</span>
+      <span id="progressRemaining">Remaining points: 0</span>
     </div>
-    <button class="stop-btn" onclick="stopCheck()">⛔ Rok Do</button>
   </div>
+
+  <!-- Results -->
   <div class="card results-box" id="resultsBox">
     <div class="results-header">
-      <h3>✅ Available Usernames</h3>
-      <button class="copy-all-btn" onclick="copyAll()">📋 Sab Copy Karo</button>
+      <h3>Results</h3>
+      <button class="export-btn" onclick="exportResults()">📋 Copy Available</button>
     </div>
     <div class="stats-row">
-      <div class="stat green"><strong id="statFound">0</strong>Available</div>
-      <div class="stat purple"><strong id="statChecked">0</strong>Checked</div>
-      <div class="stat yellow"><strong id="statPoints">0</strong>Points Bache</div>
+      <div class="stat green"><strong id="statAvailable">0</strong>Available</div>
+      <div class="stat purple"><strong id="statTotal">0</strong>Checked</div>
+      <div class="stat"><strong id="statPointsUsed">0</strong>Points Used</div>
     </div>
-    <div class="username-list" id="usernameList"></div>
+    <div class="table-scroll">
+      <table class="result-table" id="resultTable">
+        <thead>
+          <tr id="tableHeader">
+            <th>Username</th>
+          </tr>
+        </thead>
+        <tbody id="resultBody"></tbody>
+      </table>
+    </div>
   </div>
 </main>
+
 <script>
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('user') || '{}');
   if (!token) window.location.href = '/login';
 
   let currentPoints = user.points || 0;
-  let selectedPlatform = 'instagram';
-  let isStopped = false;
-  let availableUsernames = [];
-  let totalChecked = 0;
+  let selectedPlatforms = new Set(['instagram', 'threads']);
+  let lastResults = [];
 
   document.getElementById('usernameDisplay').textContent = '@' + (user.username || '');
   updatePoints(currentPoints);
@@ -156,18 +172,34 @@
     currentPoints = pts;
     document.getElementById('pointsDisplay').textContent = pts;
     document.getElementById('pointsInfo').textContent = pts;
-    document.getElementById('checksAllowed').textContent = pts * 20;
-    if (pts === 0) document.getElementById('noPointsBox').style.display = 'block';
-    else document.getElementById('noPointsBox').style.display = 'none';
+    document.getElementById('noPointsBox').style.display = pts === 0 ? 'block' : 'none';
+    updateCount();
   }
 
-  function selectPlatform(platform, el) {
-    document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('selected'));
-    el.classList.add('selected');
-    selectedPlatform = platform;
+  function togglePlatform(platform) {
+    const btn = document.getElementById('btn-' + platform);
+    if (selectedPlatforms.has(platform)) {
+      if (selectedPlatforms.size === 1) { showError('At least one platform must be selected'); return; }
+      selectedPlatforms.delete(platform);
+      btn.classList.remove('selected');
+    } else {
+      selectedPlatforms.add(platform);
+      btn.classList.add('selected');
+    }
+    updateCount();
   }
 
-  function logout() { localStorage.clear(); window.location.href = '/login'; }
+  function getUsernames() {
+    const raw = document.getElementById('usernameList').value;
+    return raw.split('\n').map(u => u.trim()).filter(u => u.length > 0).slice(0, 1000);
+  }
+
+  function updateCount() {
+    const usernames = getUsernames();
+    document.getElementById('usernameCount').textContent = usernames.length;
+    const cost = usernames.length * selectedPlatforms.size;
+    document.getElementById('costPreview').textContent = `Estimated cost: ${cost} points (${usernames.length} usernames × ${selectedPlatforms.size} platform${selectedPlatforms.size > 1 ? 's' : ''})`;
+  }
 
   function showError(msg) {
     const box = document.getElementById('errorBox');
@@ -176,138 +208,119 @@
     setTimeout(() => box.style.display = 'none', 5000);
   }
 
-  function generateUsernames(base, count) {
-    const clean = base.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
-    const list = new Set();
-    const suffixes = ['786','92','01','007','123','456','789','999','000','111','222','333','444','555','100','200','300','400','500','600','700','800','900','2024','2025','2026','pk','pro','og','vip','xo','xx','yt','ff','hd','tv','bd','official','real','king','queen','star','boy','girl','bhai','yaar','jaan'];
-    const prefixes = ['the','real','its','iam','mr','ms','sir','hey','yo','im'];
-    const specials = ['_pk','_786','_pro','_official','_real','_yt','_ff','_pubg','_gamer','_op','_bhai','_jaan','_desi','.pk','.786','.pro'];
+  function logout() { localStorage.clear(); window.location.href = '/login'; }
 
-    for (let i = 0; list.size < count * 4 && i < 200; i++) {
-      const num = Math.floor(Math.random() * 9000) + 100;
-      const num2 = Math.floor(Math.random() * 99) + 1;
-      list.add(clean + num);
-      list.add(clean + '_' + num2);
-      list.add(clean + num2);
-      suffixes.forEach(s => { if (list.size < count * 4) list.add(clean + s); if (list.size < count * 4) list.add(clean + '_' + s); });
-      prefixes.forEach(p => { if (list.size < count * 4) list.add(p + '_' + clean); if (list.size < count * 4) list.add(p + '.' + clean); });
-      specials.forEach(s => { if (list.size < count * 4) list.add(clean + s); });
+  async function startCheck() {
+    const usernames = getUsernames();
+    const platforms = [...selectedPlatforms];
+
+    if (usernames.length === 0) { showError('Enter at least one username'); return; }
+    if (usernames.length > 1000) { showError('Maximum 1000 usernames allowed'); return; }
+    if (platforms.length === 0) { showError('Select at least one platform'); return; }
+
+    const totalCost = usernames.length * platforms.length;
+    if (currentPoints < totalCost) {
+      const affordable = Math.floor(currentPoints / platforms.length);
+      if (affordable === 0) { showError('Not enough points. Contact admin.'); return; }
+      if (!confirm(`You need ${totalCost} points but only have ${currentPoints}. Only the first ${affordable} usernames will be checked. Continue?`)) return;
     }
-    return [...list].filter(u => u.length >= 3 && u.length <= 30 && /^[a-zA-Z0-9._]+$/.test(u)).slice(0, count * 2);
-  }
-
-  async function startBulkCheck() {
-    const baseWord = document.getElementById('baseWord').value.trim();
-    const quantity = parseInt(document.getElementById('quantity').value) || 100;
-    const errorBox = document.getElementById('errorBox');
-    errorBox.style.display = 'none';
-
-    if (!baseWord) { showError('Base word likhein'); return; }
-    if (quantity < 1 || quantity > 1000) { showError('Quantity 1 se 1000 ke beech ho'); return; }
-    if (currentPoints < 1) { showError('Points nahi hain! Admin se contact karo.'); return; }
-
-    const pointsNeeded = Math.ceil(quantity / 20);
-    if (currentPoints < pointsNeeded) {
-      showError(`${quantity} checks ke liye ${pointsNeeded} points chahiye. Aapke paas sirf ${currentPoints} hain.`);
-      return;
-    }
-
-    isStopped = false;
-    availableUsernames = [];
-    totalChecked = 0;
 
     document.getElementById('startBtn').disabled = true;
     document.getElementById('progressBox').style.display = 'block';
     document.getElementById('resultsBox').style.display = 'none';
-    document.getElementById('usernameList').innerHTML = '';
     document.getElementById('progressBar').style.width = '0%';
+    document.getElementById('errorBox').style.display = 'none';
 
-    const allUsernames = generateUsernames(baseWord, quantity * 2);
-    const toCheck = allUsernames.slice(0, quantity * 2);
-    const total = toCheck.length;
-
+    lastResults = [];
+    let totalChecked = 0;
     const batchSize = 10;
-    for (let i = 0; i < total && availableUsernames.length < quantity; i += batchSize) {
-      if (isStopped) break;
-      const batch = toCheck.slice(i, i + batchSize);
-      await checkBatch(batch, total, pointsNeeded);
+
+    for (let i = 0; i < usernames.length; i += batchSize) {
+      if (currentPoints < platforms.length) { showError('Points ran out mid-check.'); break; }
+
+      const batch = usernames.slice(i, i + batchSize);
+      const maxAffordableInBatch = Math.floor(currentPoints / platforms.length);
+      const actualBatch = batch.slice(0, maxAffordableInBatch);
+      if (actualBatch.length === 0) break;
+
+      const success = await checkBatch(actualBatch, platforms, usernames.length);
+      totalChecked += actualBatch.length;
+      if (!success || actualBatch.length < batch.length) break;
+
       await sleep(300);
     }
 
     document.getElementById('startBtn').disabled = false;
     document.getElementById('progressBox').style.display = 'none';
-    showFinalResults();
+    showFinalResults(platforms);
   }
 
-  async function checkBatch(batch, total, pointsNeeded) {
+  async function checkBatch(usernames, platforms, total) {
     try {
       const res = await fetch('/api/check/bulk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-        body: JSON.stringify({ usernames: batch, platform: selectedPlatform, pointsNeeded })
+        body: JSON.stringify({ usernames, platforms })
       });
       const data = await res.json();
-      if (!data.success) { showError(data.message); isStopped = true; return; }
+      if (!data.success) { showError(data.message); return false; }
 
       updatePoints(data.remainingPoints);
-      totalChecked += batch.length;
+      lastResults.push(...data.results);
 
-      data.results.forEach(r => {
-        if (r.available === true) {
-          availableUsernames.push(r.username);
-          addUsernameToList(r.username);
-        }
-      });
-
-      const pct = Math.min(Math.round((totalChecked / total) * 100), 100);
+      const pct = Math.min(Math.round((lastResults.length / total) * 100), 100);
       document.getElementById('progressBar').style.width = pct + '%';
-      document.getElementById('progressText').textContent = totalChecked + ' checked';
-      document.getElementById('progressFound').textContent = availableUsernames.length + ' available mili';
-      document.getElementById('resultsBox').style.display = 'block';
+      document.getElementById('progressText').textContent = lastResults.length + ' checked';
+      document.getElementById('progressRemaining').textContent = 'Remaining points: ' + data.remainingPoints;
+
+      return true;
     } catch (e) {
-      showError('Network error');
+      showError('Network error — please check your connection');
+      return false;
     }
   }
 
-  function addUsernameToList(username) {
-    const list = document.getElementById('usernameList');
-    const div = document.createElement('div');
-    div.className = 'u-item';
-    div.innerHTML = '<span class="u-name">@' + username + '</span><button class="copy-btn" onclick="copyOne(this,\'' + username + '\')">Copy</button>';
-    list.appendChild(div);
-  }
+  function showFinalResults(platforms) {
+    const availableCount = lastResults.filter(r =>
+      platforms.some(p => r[p] === true)
+    ).length;
 
-  function showFinalResults() {
-    document.getElementById('statFound').textContent = availableUsernames.length;
-    document.getElementById('statChecked').textContent = totalChecked;
-    document.getElementById('statPoints').textContent = currentPoints;
+    document.getElementById('statAvailable').textContent = availableCount;
+    document.getElementById('statTotal').textContent = lastResults.length;
+    document.getElementById('statPointsUsed').textContent = lastResults.length * platforms.length;
     document.getElementById('resultsBox').style.display = 'block';
-    if (availableUsernames.length === 0) {
-      document.getElementById('usernameList').innerHTML = '<div class="no-results">😔 Koi available username nahi mila — naya word try karo</div>';
+
+    // Build table header
+    const header = document.getElementById('tableHeader');
+    header.innerHTML = '<th>Username</th>' + platforms.map(p =>
+      `<th>${p.charAt(0).toUpperCase() + p.slice(1)}</th>`
+    ).join('');
+
+    // Build table body
+    const body = document.getElementById('resultBody');
+    if (lastResults.length === 0) {
+      body.innerHTML = `<tr><td colspan="${platforms.length + 1}" style="text-align:center;color:#555;padding:30px;">No results yet</td></tr>`;
+      return;
     }
+    body.innerHTML = lastResults.map(r => {
+      const cells = platforms.map(p => {
+        const val = r[p];
+        const cls = val === true ? 'status-available' : val === false ? 'status-taken' : 'status-unknown';
+        const txt = val === true ? '✅ Available' : val === false ? '❌ Taken' : '⚠️ Unknown';
+        return `<td><span class="status-pill ${cls}">${txt}</span></td>`;
+      }).join('');
+      return `<tr><td style="font-weight:600;">@${r.username}</td>${cells}</tr>`;
+    }).join('');
   }
 
-  function stopCheck() {
-    isStopped = true;
-    document.getElementById('startBtn').disabled = false;
-    document.getElementById('progressBox').style.display = 'none';
-    showFinalResults();
-  }
-
-  function copyOne(btn, username) {
-    navigator.clipboard.writeText(username).then(() => {
-      btn.textContent = '✓';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
-    });
-  }
-
-  function copyAll() {
-    if (!availableUsernames.length) { showError('Koi username nahi copy karne ke liye'); return; }
-    navigator.clipboard.writeText(availableUsernames.join('\n')).then(() => {
-      const btn = document.querySelector('.copy-all-btn');
-      btn.textContent = '✓ Sab Copy Ho Gaye!';
-      setTimeout(() => btn.textContent = '📋 Sab Copy Karo', 2000);
+  function exportResults() {
+    const platforms = [...selectedPlatforms];
+    const available = lastResults.filter(r => platforms.some(p => r[p] === true)).map(r => r.username);
+    if (available.length === 0) { showError('No available usernames to copy'); return; }
+    navigator.clipboard.writeText(available.join('\n')).then(() => {
+      const btn = document.querySelector('.export-btn');
+      btn.textContent = '✓ Copied!';
+      setTimeout(() => btn.textContent = '📋 Copy Available', 2000);
     });
   }
 
