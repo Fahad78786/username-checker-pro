@@ -65,24 +65,36 @@ router.put('/users/:id/block', adminAuth, async (req, res) => {
 router.put('/users/:id/points/add', adminAuth, async (req, res) => {
   try {
     const { points } = req.body;
-    const { data: user } = await supabase.from('users').select('points').eq('id', req.params.id).single();
-    const newPoints = user.points + parseInt(points);
-    await supabase.from('users').update({ points: newPoints }).eq('id', req.params.id);
+    if (!points || isNaN(points)) return res.json({ success: false, message: 'Points sahi number honi chahiye' });
+
+    const { data: user, error: getError } = await supabase.from('users').select('points').eq('id', req.params.id).single();
+    if (getError) return res.json({ success: false, message: 'User nahi mila: ' + getError.message });
+
+    const newPoints = (user.points || 0) + parseInt(points);
+    const { error: updateError } = await supabase.from('users').update({ points: newPoints }).eq('id', req.params.id);
+    if (updateError) return res.json({ success: false, message: 'Update error: ' + updateError.message });
+
     res.json({ success: true, message: `${points} points add ho gaye`, points: newPoints });
   } catch (err) {
-    res.json({ success: false, message: err.message });
+    res.json({ success: false, message: 'Server error: ' + err.message });
   }
 });
 
 router.put('/users/:id/points/remove', adminAuth, async (req, res) => {
   try {
     const { points } = req.body;
-    const { data: user } = await supabase.from('users').select('points').eq('id', req.params.id).single();
-    const newPoints = Math.max(0, user.points - parseInt(points));
-    await supabase.from('users').update({ points: newPoints }).eq('id', req.params.id);
+    if (!points || isNaN(points)) return res.json({ success: false, message: 'Points sahi number honi chahiye' });
+
+    const { data: user, error: getError } = await supabase.from('users').select('points').eq('id', req.params.id).single();
+    if (getError) return res.json({ success: false, message: 'User nahi mila: ' + getError.message });
+
+    const newPoints = Math.max(0, (user.points || 0) - parseInt(points));
+    const { error: updateError } = await supabase.from('users').update({ points: newPoints }).eq('id', req.params.id);
+    if (updateError) return res.json({ success: false, message: 'Update error: ' + updateError.message });
+
     res.json({ success: true, message: `${points} points remove ho gaye`, points: newPoints });
   } catch (err) {
-    res.json({ success: false, message: err.message });
+    res.json({ success: false, message: 'Server error: ' + err.message });
   }
 });
 
