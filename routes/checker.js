@@ -213,3 +213,20 @@ router.get('/debug/:platform/:username', userAuth, async (req, res) => {
 });
 
 module.exports = router;
+
+// Diagnostic: check for whitespace issues in proxy env vars without exposing secrets
+router.get('/debug-env', userAuth, (req, res) => {
+  const check = (name, val) => ({
+    exists: val !== undefined,
+    length: val ? val.length : 0,
+    hasLeadingSpace: val ? val !== val.trimStart() : false,
+    hasTrailingSpace: val ? val !== val.trimEnd() : false,
+    hasNewline: val ? /[\r\n]/.test(val) : false,
+  });
+  res.json({
+    PROXY_HOST: check('PROXY_HOST', process.env.PROXY_HOST),
+    PROXY_PORT: check('PROXY_PORT', process.env.PROXY_PORT),
+    PROXY_USERNAME: check('PROXY_USERNAME', process.env.PROXY_USERNAME),
+    PROXY_PASSWORD: check('PROXY_PASSWORD', process.env.PROXY_PASSWORD),
+  });
+});
