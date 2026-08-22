@@ -6,8 +6,16 @@ const { HttpsProxyAgent } = require('https-proxy-agent');
 const supabase = require('../supabase');
 
 // Webshare rotating proxy - automatically rotates across all proxies in the account
-const PROXY_URL = `http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@${process.env.PROXY_HOST}:${process.env.PROXY_PORT}`;
-const proxyAgent = new HttpsProxyAgent(PROXY_URL);
+let proxyAgent = null;
+let proxyError = null;
+try {
+  const PROXY_URL = `http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@${process.env.PROXY_HOST}:${process.env.PROXY_PORT}`;
+  proxyAgent = new HttpsProxyAgent(PROXY_URL);
+  console.log('Proxy agent created successfully');
+} catch (e) {
+  proxyError = e.message;
+  console.error('FAILED TO CREATE PROXY AGENT:', e.message);
+}
 
 function userAuth(req, res, next) {
   try {
@@ -49,6 +57,7 @@ async function checkOnePlatform(platform, username) {
   };
   const url = urls[platform];
   if (!url) return { status: 'unknown', displayName: null };
+  if (!proxyAgent) return { status: 'unknown', displayName: null, error: 'Proxy not configured: ' + proxyError };
 
   try {
     const response = await axios.get(url, {
