@@ -12,7 +12,7 @@ function adminAuth(req, res, next) {
     if (!decoded.isAdmin) return res.json({ success: false, message: 'Admin access nahi hai' });
     next();
   } catch (err) {
-    res.json({ success: false, message: 'Invalid token' });
+    res.json({ success: false, message: 'Invalid token: ' + err.message });
   }
 }
 
@@ -31,6 +31,7 @@ router.get('/users', adminAuth, async (req, res) => {
 router.post('/users/add', adminAuth, async (req, res) => {
   try {
     const { username, email, password, points } = req.body;
+    if (!username || !email || !password) return res.json({ success: false, message: 'Sab fields bharo' });
     const hashedPassword = await bcrypt.hash(password, 10);
     const { data: user, error } = await supabase.from('users')
       .insert([{ username, email, password: hashedPassword, points: parseInt(points) || 0 }])
@@ -44,7 +45,9 @@ router.post('/users/add', adminAuth, async (req, res) => {
 
 router.delete('/users/:id', adminAuth, async (req, res) => {
   try {
-    await supabase.from('users').delete().eq('id', req.params.id);
+    const { data, error } = await supabase.from('users').delete().eq('id', req.params.id).select();
+    if (error) return res.json({ success: false, message: error.message });
+    if (!data || data.length === 0) return res.json({ success: false, message: 'Delete fail hua — permission issue ho sakta hai' });
     res.json({ success: true, message: 'User delete ho gaya' });
   } catch (err) {
     res.json({ success: false, message: err.message });
@@ -53,9 +56,12 @@ router.delete('/users/:id', adminAuth, async (req, res) => {
 
 router.put('/users/:id/block', adminAuth, async (req, res) => {
   try {
-    const { data: user } = await supabase.from('users').select('is_blocked').eq('id', req.params.id).single();
+    const { data: user, error: getErr } = await supabase.from('users').select('is_blocked').eq('id', req.params.id).single();
+    if (getErr) return res.json({ success: false, message: getErr.message });
     const newStatus = !user.is_blocked;
-    await supabase.from('users').update({ is_blocked: newStatus }).eq('id', req.params.id);
+    const { data, error } = await supabase.from('users').update({ is_blocked: newStatus }).eq('id', req.params.id).select();
+    if (error) return res.json({ success: false, message: error.message });
+    if (!data || data.length === 0) return res.json({ success: false, message: 'Update fail hua — permission issue' });
     res.json({ success: true, message: newStatus ? 'User block ho gaya' : 'User unblock ho gaya', isBlocked: newStatus });
   } catch (err) {
     res.json({ success: false, message: err.message });
@@ -71,8 +77,9 @@ router.put('/users/:id/points/add', adminAuth, async (req, res) => {
     if (getError) return res.json({ success: false, message: 'User nahi mila: ' + getError.message });
 
     const newPoints = (user.points || 0) + parseInt(points);
-    const { error: updateError } = await supabase.from('users').update({ points: newPoints }).eq('id', req.params.id);
+    const { data, error: updateError } = await supabase.from('users').update({ points: newPoints }).eq('id', req.params.id).select();
     if (updateError) return res.json({ success: false, message: 'Update error: ' + updateError.message });
+    if (!data || data.length === 0) return res.json({ success: false, message: 'Update fail hua — permission issue' });
 
     res.json({ success: true, message: `${points} points add ho gaye`, points: newPoints });
   } catch (err) {
@@ -89,8 +96,9 @@ router.put('/users/:id/points/remove', adminAuth, async (req, res) => {
     if (getError) return res.json({ success: false, message: 'User nahi mila: ' + getError.message });
 
     const newPoints = Math.max(0, (user.points || 0) - parseInt(points));
-    const { error: updateError } = await supabase.from('users').update({ points: newPoints }).eq('id', req.params.id);
+    const { data, error: updateError } = await supabase.from('users').update({ points: newPoints }).eq('id', req.params.id).select();
     if (updateError) return res.json({ success: false, message: 'Update error: ' + updateError.message });
+    if (!data || data.length === 0) return res.json({ success: false, message: 'Update fail hua — permission issue' });
 
     res.json({ success: true, message: `${points} points remove ho gaye`, points: newPoints });
   } catch (err) {
