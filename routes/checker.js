@@ -2,7 +2,12 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const axios = require('axios');
+const { HttpsProxyAgent } = require('https-proxy-agent');
 const supabase = require('../supabase');
+
+// Webshare rotating proxy - automatically rotates across all proxies in the account
+const PROXY_URL = `http://${process.env.PROXY_USERNAME}:${process.env.PROXY_PASSWORD}@${process.env.PROXY_HOST}:${process.env.PROXY_PORT}`;
+const proxyAgent = new HttpsProxyAgent(PROXY_URL);
 
 function userAuth(req, res, next) {
   try {
@@ -19,8 +24,7 @@ function userAuth(req, res, next) {
 // Try to extract the public display name from the page's <title> or meta tags
 function extractDisplayName(platform, body) {
   try {
-    if (platform === 'instagram') {
-      // Instagram <title> looks like: "Full Name (@username) • Instagram photos and videos"
+    if (platform === 'instagram' || platform === 'threads') {
       const titleMatch = body.match(/<title>(.*?)<\/title>/i);
       if (titleMatch && titleMatch[1]) {
         const raw = titleMatch[1];
@@ -30,14 +34,6 @@ function extractDisplayName(platform, body) {
       const ogMatch = body.match(/<meta property="og:title" content="(.*?)"/i);
       if (ogMatch && ogMatch[1]) {
         const nameMatch = ogMatch[1].match(/^(.*?)\s*\(@/);
-        if (nameMatch && nameMatch[1]) return nameMatch[1].trim();
-      }
-    }
-    if (platform === 'threads') {
-      const titleMatch = body.match(/<title>(.*?)<\/title>/i);
-      if (titleMatch && titleMatch[1]) {
-        const raw = titleMatch[1];
-        const nameMatch = raw.match(/^(.*?)\s*\(@/);
         if (nameMatch && nameMatch[1]) return nameMatch[1].trim();
       }
     }
@@ -56,8 +52,10 @@ async function checkOnePlatform(platform, username) {
 
   try {
     const response = await axios.get(url, {
-      timeout: 10000,
+      timeout: 15000,
       maxRedirects: 5,
+      httpsAgent: proxyAgent,
+      proxy: false, // disable axios's own proxy handling, we use the agent instead
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -93,7 +91,7 @@ async function checkOnePlatform(platform, username) {
 
     return { status: 'unknown', displayName: null };
   } catch (err) {
-    return { status: 'unknown', displayName: null };
+    return { status: 'unknown', displayName: null, error: err.message };
   }
 }
 
@@ -161,6 +159,42 @@ router.post('/bulk', userAuth, async (req, res) => {
 
   } catch (err) {
     res.json({ success: false, message: 'Server error: ' + err.message });
+  }
+});
+
+// Diagnostic route - shows raw response for debugging (uses proxy too)
+router.get('/debug/:platform/:username', userAuth, async (req, res) => {
+  try {
+    const { platform, username } = req.params;
+    const urls = {
+      instagram: `https://www.instagram.com/${username}/`,
+      threads: `https://www.threads.net/@${username}`,
+    };
+    const url = urls[platform];
+    if (!url) return res.json({ error: 'invalid platform' });
+
+    const response = await axios.get(url, {
+      timeout: 15000,
+      maxRedirects: 5,
+      httpsAgent: proxyAgent,
+      proxy: false,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Cache-Control': 'no-cache',
+      },
+      validateStatus: () => true
+    });
+
+    const body = response.data?.toString() || '';
+    res.json({
+      status: response.status,
+      bodyLength: body.length,
+      bodySnippet: body.slice(0, 1500),
+    });
+  } catch (err) {
+    res.json({ error: err.message });
   }
 });
 

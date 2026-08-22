@@ -16,6 +16,7 @@
     "axios": "^1.6.0",
     "@supabase/supabase-js": "^2.39.0",
     "dotenv": "^16.0.0",
-    "ws": "^8.16.0"
+    "ws": "^8.16.0",
+    "https-proxy-agent": "^7.0.4"
   }
 }
