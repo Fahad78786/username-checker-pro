@@ -16,30 +16,65 @@ function userAuth(req, res, next) {
   }
 }
 
-// RapidAPI se real check
-async function checkUsernameRapidAPI(username) {
+async function checkPlatform(platform, username) {
+  const urls = {
+    instagram: `https://www.instagram.com/${username}/`,
+    facebook: `https://www.facebook.com/${username}`,
+    twitter: `https://www.x.com/${username}`,
+    threads: `https://www.threads.net/@${username}`,
+  };
+  const url = urls[platform];
+  if (!url) return { platform, username, available: null, status: '⚠️ Unknown' };
   try {
-    const response = await axios.get(
-      `https://osint-username-availability-brand-checker-api.p.rapidapi.com/check?username=${encodeURIComponent(username)}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-rapidapi-host': 'osint-username-availability-brand-checker-api.p.rapidapi.com',
-          'x-rapidapi-key': process.env.RAPIDAPI_KEY
-        },
-        timeout: 15000
-      }
-    );
-
-    const data = response.data;
-    // Parse response - API returns platform availability
-    return { username, data, success: true };
+    const response = await axios.get(url, {
+      timeout: 10000, maxRedirects: 5,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Cache-Control': 'no-cache',
+      },
+      validateStatus: () => true
+    });
+    const status = response.status;
+    const body = response.data?.toString() || '';
+    if (platform === 'instagram') {
+      if (status === 404 || body.includes("Sorry, this page") || body.includes("isn't available"))
+        return { platform, username, available: true, status: '✅ Available' };
+      if (status === 200 && body.length > 10000)
+        return { platform, username, available: false, status: '❌ Taken' };
+    } else {
+      if (status === 404) return { platform, username, available: true, status: '✅ Available' };
+      if (status === 200) return { platform, username, available: false, status: '❌ Taken' };
+    }
+    return { platform, username, available: null, status: '⚠️ Unknown' };
   } catch (err) {
-    return { username, success: false, error: err.message };
+    return { platform, username, available: null, status: '⚠️ Check Failed' };
   }
 }
 
-// BULK CHECK with RapidAPI
+router.post('/username', userAuth, async (req, res) => {
+  try {
+    const { username } = req.body;
+    if (!username) return res.json({ success: false, message: 'Username daalo' });
+
+    const { data: user } = await supabase.from('users').select('*').eq('id', req.userId).single();
+    if (!user) return res.json({ success: false, message: 'User nahi mila' });
+    if (user.is_blocked) return res.json({ success: false, message: 'Account block hai' });
+    if (user.points < 1) return res.json({ success: false, message: 'Points khatam! Admin se contact karo.' });
+
+    const platforms = ['instagram', 'facebook', 'twitter', 'threads'];
+    const results = await Promise.all(platforms.map(p => checkPlatform(p, username)));
+
+    const newPoints = user.points - 1;
+    await supabase.from('users').update({ points: newPoints, total_checked: (user.total_checked || 0) + 1 }).eq('id', req.userId);
+
+    res.json({ success: true, username, results, remainingPoints: newPoints });
+  } catch (err) {
+    res.json({ success: false, message: 'Server error: ' + err.message });
+  }
+});
+
 router.post('/bulk', userAuth, async (req, res) => {
   try {
     const { usernames, platform } = req.body;
@@ -51,64 +86,18 @@ router.post('/bulk', userAuth, async (req, res) => {
     if (user.is_blocked) return res.json({ success: false, message: 'Account block hai' });
     if (user.points < 1) return res.json({ success: false, message: 'Points khatam! Admin se contact karo.' });
 
-    const results = [];
+    const results = await Promise.all(usernames.map(u => checkPlatform(platform || 'instagram', u)));
 
-    // Check one by one (RapidAPI rate limit)
-    for (const username of usernames) {
-      const apiResult = await checkUsernameRapidAPI(username);
-
-      if (apiResult.success && apiResult.data) {
-        const platformData = apiResult.data;
-
-        // Map platform name to API response key
-        const platformMap = {
-          instagram: 'instagram',
-          facebook: 'facebook',
-          twitter: 'twitter',
-          threads: 'threads'
-        };
-
-        const key = platformMap[platform] || platform;
-        let available = null;
-
-        // API typically returns {instagram: true/false, facebook: true/false, ...}
-        if (platformData[key] !== undefined) {
-          available = platformData[key] === true || platformData[key] === 'available';
-        } else if (platformData.available !== undefined) {
-          available = platformData.available;
-        } else if (typeof platformData === 'object') {
-          // Try to find platform in response
-          const keys = Object.keys(platformData);
-          const matchKey = keys.find(k => k.toLowerCase().includes(key));
-          if (matchKey) available = platformData[matchKey] === true || platformData[matchKey] === 'available';
-        }
-
-        results.push({ username, available });
-      } else {
-        results.push({ username, available: null });
-      }
-
-      // Small delay to respect rate limits
-      await new Promise(r => setTimeout(r, 200));
-    }
-
-    // Deduct points only for available usernames found
     const availableFound = results.filter(r => r.available === true).length;
-    const ptsToDeduct = Math.floor(availableFound / 20); // 50 pts = 1000 available
+    const ptsToDeduct = Math.floor(availableFound / 20);
     const newPoints = Math.max(0, user.points - ptsToDeduct);
-    const newChecked = (user.total_checked || 0) + usernames.length;
 
     await supabase.from('users').update({
       points: ptsToDeduct > 0 ? newPoints : user.points,
-      total_checked: newChecked
+      total_checked: (user.total_checked || 0) + usernames.length
     }).eq('id', req.userId);
 
-    res.json({
-      success: true,
-      results,
-      remainingPoints: ptsToDeduct > 0 ? newPoints : user.points
-    });
-
+    res.json({ success: true, results, remainingPoints: ptsToDeduct > 0 ? newPoints : user.points });
   } catch (err) {
     res.json({ success: false, message: 'Server error: ' + err.message });
   }

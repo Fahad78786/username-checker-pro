@@ -2,11 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { createClient } = require('@supabase/supabase-js');
-
-function getSupabase() {
-  return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
-}
+const supabase = require('../supabase');
 
 function adminAuth(req, res, next) {
   try {
@@ -22,7 +18,6 @@ function adminAuth(req, res, next) {
 
 router.get('/users', adminAuth, async (req, res) => {
   try {
-    const supabase = getSupabase();
     const { data: users, error } = await supabase.from('users')
       .select('id, username, email, points, is_blocked, country, country_code, ip, total_checked, created_at, last_login')
       .eq('is_admin', false).order('created_at', { ascending: false });
@@ -35,7 +30,6 @@ router.get('/users', adminAuth, async (req, res) => {
 
 router.post('/users/add', adminAuth, async (req, res) => {
   try {
-    const supabase = getSupabase();
     const { username, email, password, points } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const { data: user, error } = await supabase.from('users')
@@ -50,7 +44,6 @@ router.post('/users/add', adminAuth, async (req, res) => {
 
 router.delete('/users/:id', adminAuth, async (req, res) => {
   try {
-    const supabase = getSupabase();
     await supabase.from('users').delete().eq('id', req.params.id);
     res.json({ success: true, message: 'User delete ho gaya' });
   } catch (err) {
@@ -60,7 +53,6 @@ router.delete('/users/:id', adminAuth, async (req, res) => {
 
 router.put('/users/:id/block', adminAuth, async (req, res) => {
   try {
-    const supabase = getSupabase();
     const { data: user } = await supabase.from('users').select('is_blocked').eq('id', req.params.id).single();
     const newStatus = !user.is_blocked;
     await supabase.from('users').update({ is_blocked: newStatus }).eq('id', req.params.id);
@@ -72,7 +64,6 @@ router.put('/users/:id/block', adminAuth, async (req, res) => {
 
 router.put('/users/:id/points/add', adminAuth, async (req, res) => {
   try {
-    const supabase = getSupabase();
     const { points } = req.body;
     const { data: user } = await supabase.from('users').select('points').eq('id', req.params.id).single();
     const newPoints = user.points + parseInt(points);
@@ -85,7 +76,6 @@ router.put('/users/:id/points/add', adminAuth, async (req, res) => {
 
 router.put('/users/:id/points/remove', adminAuth, async (req, res) => {
   try {
-    const supabase = getSupabase();
     const { points } = req.body;
     const { data: user } = await supabase.from('users').select('points').eq('id', req.params.id).single();
     const newPoints = Math.max(0, user.points - parseInt(points));
@@ -98,7 +88,6 @@ router.put('/users/:id/points/remove', adminAuth, async (req, res) => {
 
 router.get('/stats', adminAuth, async (req, res) => {
   try {
-    const supabase = getSupabase();
     const { count: totalUsers } = await supabase.from('users').select('*', { count: 'exact', head: true }).eq('is_admin', false);
     const { count: blockedUsers } = await supabase.from('users').select('*', { count: 'exact', head: true }).eq('is_blocked', true);
     const { data: pointsData } = await supabase.from('users').select('points');
