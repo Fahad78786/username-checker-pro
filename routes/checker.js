@@ -59,6 +59,8 @@ async function checkOnePlatform(platform, username) {
   if (!url) return { status: 'unknown', displayName: null };
   if (!proxyAgent) return { status: 'unknown', displayName: null, error: 'Proxy not configured: ' + proxyError };
 
+  console.log(`[CHECK START] platform=${platform} username=${username}`);
+
   try {
     const response = await axios.get(url, {
       timeout: 15000,
@@ -73,6 +75,8 @@ async function checkOnePlatform(platform, username) {
       },
       validateStatus: () => true
     });
+
+    console.log(`[CHECK DONE] platform=${platform} username=${username} status=${response.status} bodyLen=${response.data?.toString().length || 0}`);
 
     const status = response.status;
     const body = response.data?.toString() || '';
@@ -100,7 +104,7 @@ async function checkOnePlatform(platform, username) {
 
     return { status: 'unknown', displayName: null };
   } catch (err) {
-    console.error(`Proxy check failed for ${platform}:`, err.message);
+    console.error(`[CHECK ERROR] platform=${platform} username=${username} message=${err.message} code=${err.code}`);
     return { status: 'unknown', displayName: null, error: err.message };
   }
 }
