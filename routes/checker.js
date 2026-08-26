@@ -28,7 +28,7 @@ function userAuth(req, res, next) {
   }
 }
 
-// ✅ بہتر براؤزر مینیجر
+// ✅ بہتر براؤزر مینیجر (Chrome Path کے ساتھ)
 let browserInstance = null;
 let browserPromise = null;
 
@@ -36,7 +36,6 @@ async function getBrowser() {
   if (browserPromise) {
     try {
       const browser = await browserPromise;
-      // چیک کرو براؤزر زندہ ہے؟
       await browser.version();
       return browser;
     } catch (err) {
@@ -46,8 +45,14 @@ async function getBrowser() {
     }
   }
 
+  // ✅ Railway/Render کے لیے Chrome Path
+  const chromePath = process.env.PUPPETEER_EXECUTABLE_PATH || 
+                     process.env.CHROME_PATH ||
+                     '/usr/bin/chromium';
+
   browserPromise = puppeteer.launch({
     headless: 'new',
+    executablePath: chromePath,  // ✅ یہ نئی لائن ہے
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
@@ -70,11 +75,9 @@ async function getBrowser() {
 // ✅ صارف کا نام نکالنے کا بہتر طریقہ
 function extractDisplayName(body, username) {
   try {
-    // طریقہ 1: JSON سے ڈیٹا نکالو
     const jsonMatch = body.match(/"full_name":"([^"]+)"/);
     if (jsonMatch && jsonMatch[1]) return jsonMatch[1];
 
-    // طریقہ 2: Title سے نکالو
     const titleMatch = body.match(/<title>(.*?)<\/title>/i);
     if (titleMatch && titleMatch[1]) {
       const cleanTitle = titleMatch[1].replace(/\(@[^)]+\)/g, '').trim();
@@ -83,7 +86,6 @@ function extractDisplayName(body, username) {
       }
     }
 
-    // طریقہ 3: Meta Tags سے
     const ogTitleMatch = body.match(/<meta[^>]*property="og:title"[^>]*content="([^"]+)"[^>]*>/i);
     if (ogTitleMatch && ogTitleMatch[1]) {
       const clean = ogTitleMatch[1].replace(/\(@[^)]+\)/g, '').trim();
@@ -119,17 +121,14 @@ async function checkOnePlatform(platform, username) {
       const browser = await getBrowser();
       page = await browser.newPage();
 
-      // ✅ Proxy Authentication (Webshare کے لیے)
       await page.authenticate({
         username: PROXY_USERNAME,
         password: PROXY_PASSWORD
       });
 
-      // ✅ اصلی براؤزر جیسی شناخت
       await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36');
       await page.setViewport({ width: 1280, height: 800 });
 
-      // ✅ Extra Headers
       await page.setExtraHTTPHeaders({
         'Accept-Language': 'en-US,en;q=0.9',
         'Accept-Encoding': 'gzip, deflate, br',
@@ -138,13 +137,11 @@ async function checkOnePlatform(platform, username) {
         'Sec-Ch-Ua-Platform': '"Windows"',
       });
 
-      // ✅ Instagram/Threads کھولو
       const response = await page.goto(url, {
         waitUntil: 'networkidle2',
         timeout: 30000
       });
 
-      // ✅ تھوڑا انتظار کرو (JavaScript رینڈر ہونے کے لیے)
       await page.waitForTimeout(2000);
 
       const status = response ? response.status() : 0;
@@ -153,12 +150,8 @@ async function checkOnePlatform(platform, username) {
 
       console.log(`[CHECK] ${platform}/${cleanUsername} status=${status} bodyLen=${body.length}`);
 
-      // ✅ صفحہ بند کرنے سے پہلے ڈیٹا نکالو
       await page.close();
 
-      // ✅ مختلف حالات کو چیک کرو
-
-      // 1. اگر 404 ہے یا صفحہ نہیں ملا
       if (status === 404 ||
         bodyLower.includes("sorry, this page") ||
         bodyLower.includes("isn't available") ||
@@ -167,7 +160,6 @@ async function checkOnePlatform(platform, username) {
         return { status: 'available', displayName: null };
       }
 
-      // 2. اگر اکاؤنٹ معطل ہے
       if (bodyLower.includes("account has been disabled") ||
         bodyLower.includes("account suspended") ||
         bodyLower.includes("account has been restricted") ||
@@ -175,20 +167,17 @@ async function checkOnePlatform(platform, username) {
         return { status: 'suspended', displayName: null };
       }
 
-      // 3. اگر چیلنج پیج آ گیا (بلاک کا خطرہ)
       if (bodyLower.includes("challenge") ||
         bodyLower.includes("verify your identity") ||
         bodyLower.includes("we detected unusual activity")) {
         return { status: 'challenge', displayName: null };
       }
 
-      // 4. اگر لاگ ان پیج آ گیا
       if (bodyLower.includes("login") &&
         (bodyLower.includes("log in") || bodyLower.includes("sign in"))) {
         return { status: 'login_required', displayName: null };
       }
 
-      // 5. اگر پروفائل مل گیا
       const hasProfileMarkers =
         body.includes('"is_private"') ||
         body.includes('edge_followed_by') ||
@@ -202,7 +191,6 @@ async function checkOnePlatform(platform, username) {
         return { status: 'active', displayName: displayName };
       }
 
-      // 6. اگر کچھ اور ہے تو unknown
       return { status: 'unknown', displayName: null };
 
     } catch (err) {
@@ -243,7 +231,6 @@ router.post('/bulk', userAuth, async (req, res) => {
   try {
     const { usernames, platforms } = req.body;
 
-    // ✅ انپٹ ویریفکیشن
     if (!usernames || !Array.isArray(usernames) || usernames.length === 0) {
       return res.json({ success: false, message: 'Username list is empty' });
     }
@@ -257,7 +244,6 @@ router.post('/bulk', userAuth, async (req, res) => {
       return res.json({ success: false, message: 'Invalid platform selection' });
     }
 
-    // ✅ صارف کو ڈیٹا بیس سے لو
     const { data: user, error: userErr } = await supabase
       .from('users')
       .select('*')
@@ -272,7 +258,6 @@ router.post('/bulk', userAuth, async (req, res) => {
       return res.json({ success: false, message: 'Your account is blocked' });
     }
 
-    // ✅ پوائنٹس چیک کرو
     const costPerUsername = validPlatforms.length;
     const affordableCount = Math.floor(user.points / costPerUsername);
 
@@ -280,7 +265,6 @@ router.post('/bulk', userAuth, async (req, res) => {
       return res.json({ success: false, message: 'Not enough points. Contact admin.' });
     }
 
-    // ✅ زیادہ سے زیادہ 20 اکاؤنٹس فی درخواست (ٹائم آؤٹ سے بچنے کے لیے)
     const MAX_PER_REQUEST = 20;
     const usernamesToProcess = usernames
       .slice(0, Math.min(affordableCount, MAX_PER_REQUEST))
@@ -291,14 +275,12 @@ router.post('/bulk', userAuth, async (req, res) => {
       return res.json({ success: false, message: 'No valid usernames found' });
     }
 
-    // ✅ تمام اکاؤنٹس چیک کرو
     const results = [];
     for (const u of usernamesToProcess) {
       const result = await checkUsernameAllPlatforms(u, validPlatforms);
       results.push(result);
     }
 
-    // ✅ پوائنٹس اپ ڈیٹ کرو
     const totalCost = usernamesToProcess.length * costPerUsername;
     const newPoints = Math.max(0, user.points - totalCost);
     const newChecked = (user.total_checked || 0) + usernamesToProcess.length;
@@ -317,7 +299,6 @@ router.post('/bulk', userAuth, async (req, res) => {
       return res.json({ success: false, message: 'Failed to update points' });
     }
 
-    // ✅ جواب بھیجو
     res.json({
       success: true,
       results: results,
