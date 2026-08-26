@@ -83,6 +83,7 @@ async function checkOnePlatform(platform, username) {
     const bodyLower = body.toLowerCase();
 
     console.log(`[BODY SNIPPET] ${platform}/${username}: ${body.slice(0, 300).replace(/\n/g, ' ')}`);
+    console.log(`[MARKERS] ${platform}/${username}: has_login_form=${body.includes('loginForm')} has_og_title=${body.includes('og:title')} has_edge_followed=${body.includes('edge_followed_by')} has_profile_pic=${body.includes('profile_pic_url')} has_login_text=${bodyLower.includes('log in')} has_signup=${bodyLower.includes('sign up')} has_challenge=${bodyLower.includes('challenge')} title_tag=${(body.match(/<title>(.*?)<\/title>/i) || [])[1] || 'NONE'}`);
 
     if (platform === 'instagram') {
       if (status === 404 || body.includes("Sorry, this page") || body.includes("isn't available"))
