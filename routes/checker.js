@@ -85,20 +85,55 @@ async function checkOnePlatform(platform, username) {
     if (platform === 'instagram') {
       if (status === 404 || body.includes("Sorry, this page") || body.includes("isn't available"))
         return { status: 'available', displayName: null };
-      if (bodyLower.includes('this account has been disabled') || bodyLower.includes('account suspended') || bodyLower.includes('account has been restricted'))
+
+      // Strong signals of a suspended/disabled/removed account
+      if (
+        bodyLower.includes('account has been disabled') ||
+        bodyLower.includes('account suspended') ||
+        bodyLower.includes('account has been restricted') ||
+        bodyLower.includes('page not found') ||
+        bodyLower.includes("content isn't available right now") ||
+        bodyLower.includes('unable to load')
+      ) {
         return { status: 'suspended', displayName: null };
-      if (status === 200 && body.length > 10000)
+      }
+
+      // Strong signals of a genuine active profile: profile-specific meta/JSON markers
+      const hasProfileMarkers =
+        body.includes('"is_private"') ||
+        body.includes('edge_followed_by') ||
+        body.includes('"profile_pic_url"') ||
+        body.includes('property="og:type" content="profile"') ||
+        (body.includes('og:title') && body.includes(`(@${username})`));
+
+      if (status === 200 && hasProfileMarkers) {
         return { status: 'active', displayName: extractDisplayName('instagram', body) };
+      }
+
       return { status: 'unknown', displayName: null };
     }
 
     if (platform === 'threads') {
       if (status === 404 || body.includes("isn't available"))
         return { status: 'available', displayName: null };
-      if (bodyLower.includes('account has been disabled') || bodyLower.includes('account suspended'))
+
+      if (
+        bodyLower.includes('account has been disabled') ||
+        bodyLower.includes('account suspended') ||
+        bodyLower.includes('page not found')
+      ) {
         return { status: 'suspended', displayName: null };
-      if (status === 200 && body.length > 5000)
+      }
+
+      const hasProfileMarkers =
+        body.includes('"is_private"') ||
+        body.includes('"profile_pic_url"') ||
+        (body.includes('og:title') && body.includes(`(@${username})`));
+
+      if (status === 200 && hasProfileMarkers) {
         return { status: 'active', displayName: extractDisplayName('threads', body) };
+      }
+
       return { status: 'unknown', displayName: null };
     }
 
