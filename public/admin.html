@@ -311,8 +311,8 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    // ✅ API Base URL - Yahan apna Railway URL daalo!
-    const API_BASE_URL = 'username-checker-pro-production.up.railway.app';
+    // ✅ API Base URL - SAHI (https:// ke saath)
+    const API_BASE_URL = 'https://username-checker-pro-production.up.railway.app';
 
     const token = localStorage.getItem('token');
     if (!token) window.location.href = '/login';
@@ -335,8 +335,7 @@
         });
         const text = await res.text();
         let data;
-        try { data = JSON.parse(text); } catch { throw new Error('Server ne invalid response diya: ' + text.slice(0,
-            100)); }
+        try { data = JSON.parse(text); } catch { throw new Error('Server ne invalid response diya: ' + text.slice(0, 100)); }
         return data;
       } catch (err) {
         throw new Error(err.message || 'Network error');

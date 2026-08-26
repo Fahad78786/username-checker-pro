@@ -125,7 +125,7 @@
   </div>
 
   <script>
-    // ✅ API Base URL - Yahan apna Railway URL daalo!
+    // ✅ API Base URL - SAHI (https:// ke saath)
     const API_BASE_URL = 'https://username-checker-pro-production.up.railway.app';
 
     async function login() {
@@ -150,7 +150,7 @@
         } else {
           showMsg(data.message, 'error');
         }
-      } catch (e) { showMsg('Server error', 'error'); }
+      } catch (e) { showMsg('Server error: ' + e.message, 'error'); }
     }
 
     function showMsg(text, type) {
