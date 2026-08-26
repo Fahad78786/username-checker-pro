@@ -62,71 +62,54 @@
       border-color: #9ca3af;
     }
     main {
-      max-width: 900px;
+      max-width: 1100px;
       margin: 0 auto;
       padding: 30px 20px 60px;
     }
     h1 {
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 700;
       margin-bottom: 6px;
       color: #1e1e2f;
     }
     .subtitle {
       color: #6b7280;
-      font-size: 14px;
+      font-size: 15px;
       margin-bottom: 24px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
     }
     .card {
       background: #ffffff;
       border: 1px solid #e2e8f0;
       border-radius: 16px;
       padding: 22px;
-      margin-bottom: 18px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     }
     .card-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #4b5563;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #1e1e2f;
       margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .platform-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-    }
-    .platform-btn {
-      background: #f9fafb;
-      border: 2px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 16px;
-      cursor: pointer;
-      text-align: center;
-      transition: all 0.2s;
-      user-select: none;
-    }
-    .platform-btn:hover {
-      border-color: #7c3aed;
-    }
-    .platform-btn.selected {
-      border-color: #7c3aed;
+    .card-title .badge {
+      font-size: 11px;
       background: #ede9fe;
-    }
-    .platform-btn .p-icon {
-      font-size: 26px;
-      display: block;
-      margin-bottom: 8px;
-    }
-    .platform-btn .p-name {
-      font-size: 13px;
-      color: #4b5563;
-      font-weight: 600;
-    }
-    .platform-btn.selected .p-name {
       color: #7c3aed;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-weight: 600;
     }
     label {
       font-size: 13px;
@@ -134,128 +117,103 @@
       display: block;
       margin-bottom: 6px;
     }
+    input[type="text"],
     textarea {
       width: 100%;
-      min-height: 180px;
-      padding: 14px 16px;
+      padding: 12px 14px;
       background: #f9fafb;
       border: 1.5px solid #e5e7eb;
       border-radius: 10px;
       color: #1e1e2f;
-      font-size: 13px;
+      font-size: 14px;
       outline: none;
-      resize: vertical;
+      transition: border-color 0.2s;
       font-family: 'Consolas', monospace;
-      line-height: 1.6;
     }
+    input:focus,
     textarea:focus {
       border-color: #7c3aed;
     }
-    .textarea-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 8px;
-      font-size: 12px;
-      color: #6b7280;
+    textarea {
+      min-height: 120px;
+      resize: vertical;
     }
-    .textarea-footer span.count {
-      color: #7c3aed;
-      font-weight: 600;
-    }
-    .points-info {
-      background: #f3f4f6;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      padding: 12px 16px;
-      margin: 16px 0;
-      font-size: 13px;
-      color: #4b5563;
-    }
-    .points-info .info-row {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-    .points-info span.highlight {
-      color: #7c3aed;
-      font-weight: 700;
-    }
-    .start-btn {
+    .btn {
       width: 100%;
-      padding: 14px;
+      padding: 12px;
       background: linear-gradient(90deg, #7c3aed, #db2777);
       border: none;
-      border-radius: 12px;
+      border-radius: 10px;
       color: #fff;
-      font-size: 16px;
-      font-weight: 700;
+      font-size: 15px;
+      font-weight: 600;
       cursor: pointer;
       transition: opacity 0.2s;
+      margin-top: 12px;
     }
-    .start-btn:hover {
+    .btn:hover {
       opacity: 0.88;
     }
-    .start-btn:disabled {
-      opacity: 0.4;
+    .btn:disabled {
+      opacity: 0.5;
       cursor: not-allowed;
     }
-    .progress-box {
-      display: none;
-    }
-    .progress-bar-wrap {
+    .btn-secondary {
       background: #e5e7eb;
-      border-radius: 30px;
-      height: 12px;
-      margin: 12px 0;
-      overflow: hidden;
+      color: #1e1e2f;
     }
-    .progress-bar {
-      height: 100%;
-      background: linear-gradient(90deg, #7c3aed, #db2777);
-      border-radius: 30px;
-      transition: width 0.2s;
-      width: 0%;
+    .btn-secondary:hover {
+      background: #d1d5db;
     }
-    .progress-text {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      color: #6b7280;
-    }
-    .results-box {
+    .result-box {
+      margin-top: 16px;
+      padding: 16px;
+      background: #f9fafb;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
       display: none;
+      max-height: 400px;
+      overflow-y: auto;
     }
-    .results-header {
+    .result-box.show {
+      display: block;
+    }
+    .result-item {
+      padding: 8px 12px;
+      border-bottom: 1px solid #e5e7eb;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 14px;
-      flex-wrap: wrap;
-      gap: 10px;
     }
-    .results-header h3 {
-      font-size: 16px;
+    .result-item:last-child {
+      border-bottom: none;
+    }
+    .result-item .username {
+      font-weight: 600;
       color: #1e1e2f;
     }
-    .export-btn {
-      padding: 8px 18px;
-      background: #dcfce7;
-      border: 1px solid #86efac;
-      color: #166534;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 13px;
+    .result-item .status {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
       font-weight: 600;
     }
-    .export-btn:hover {
-      background: #bbf7d0;
+    .status-available {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+    .status-taken {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+    .status-error {
+      background: #fef3c7;
+      color: #d97706;
     }
     .stats-row {
       display: flex;
       gap: 12px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       flex-wrap: wrap;
     }
     .stat {
@@ -265,13 +223,13 @@
       padding: 10px 16px;
       font-size: 12px;
       flex: 1;
-      min-width: 90px;
+      min-width: 80px;
       text-align: center;
       color: #4b5563;
     }
     .stat strong {
       display: block;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: 700;
       margin-bottom: 2px;
     }
@@ -281,60 +239,30 @@
     .stat.purple strong {
       color: #7c3aed;
     }
-    table.result-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-    table.result-table th {
-      text-align: left;
-      font-size: 11px;
-      color: #6b7280;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      padding: 10px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    table.result-table td {
-      padding: 10px;
-      border-bottom: 1px solid #f3f4f6;
-    }
-    table.result-table tr:hover td {
-      background: #f9fafb;
-    }
-    .status-pill {
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 700;
-      display: inline-block;
-    }
-    .status-available {
-      background: #dcfce7;
-      color: #16a34a;
-    }
-    .status-active {
-      background: #dbeafe;
+    .stat.blue strong {
       color: #2563eb;
     }
-    .status-suspended {
-      background: #fee2e2;
-      color: #dc2626;
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #6b7280;
     }
-    .status-unknown {
-      background: #fef3c7;
-      color: #d97706;
+    .loading .spinner {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border: 3px solid #e5e7eb;
+      border-top: 3px solid #7c3aed;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
     }
-    .table-scroll {
-      max-height: 500px;
-      overflow-y: auto;
-    }
-    .table-scroll::-webkit-scrollbar {
-      width: 6px;
-    }
-    .table-scroll::-webkit-scrollbar-thumb {
-      background: #d1d5db;
-      border-radius: 3px;
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
     }
     .error-box {
       background: #fee2e2;
@@ -343,35 +271,77 @@
       padding: 12px 16px;
       color: #dc2626;
       font-size: 14px;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       display: none;
     }
-    .no-points-box {
-      background: #fef3c7;
-      border: 1px solid #fcd34d;
-      border-radius: 12px;
-      padding: 20px;
-      text-align: center;
-      margin-bottom: 16px;
-      display: none;
+    .error-box.show {
+      display: block;
     }
-    .no-points-box p {
-      color: #d97706;
-      margin-bottom: 6px;
+    .tab-buttons {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .tab-btn {
+      padding: 8px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      background: transparent;
+      cursor: pointer;
       font-weight: 600;
+      font-size: 13px;
+      color: #6b7280;
+      transition: all 0.2s;
     }
-    .no-points-box small {
+    .tab-btn.active {
+      border-color: #7c3aed;
+      color: #7c3aed;
+      background: #ede9fe;
+    }
+    .tab-btn:hover {
+      border-color: #7c3aed;
+      color: #7c3aed;
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .detail-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 13px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .detail-item .label {
+      color: #6b7280;
+    }
+    .detail-item .value {
+      font-weight: 600;
+      color: #1e1e2f;
+    }
+    .profile-pic {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #e5e7eb;
+    }
+    .verified-badge {
+      color: #2563eb;
+      font-size: 16px;
+    }
+    .private-badge {
       color: #6b7280;
       font-size: 13px;
-    }
-    @media (max-width: 500px) {
-      table.result-table {
-        font-size: 11px;
-      }
-      table.result-table th,
-      table.result-table td {
-        padding: 6px;
-      }
     }
   </style>
 </head>
@@ -385,82 +355,76 @@
     </div>
   </header>
   <main>
-    <h1>Username Checker</h1>
-    <p class="subtitle">Enter your usernames, choose platforms, and check real availability — up to 1000 at once.</p>
-
-    <div class="no-points-box" id="noPointsBox">
-      <p>⚠️ You have no points!</p>
-      <small>Contact the admin to get points</small>
-    </div>
+    <h1>🔍 Instagram & Threads Checker</h1>
+    <p class="subtitle">Check Instagram and Threads usernames with proxy support. 1 point per check.</p>
 
     <div class="error-box" id="errorBox"></div>
 
-    <div class="card">
-      <div class="card-title">1. Select Platform(s)</div>
-      <div class="platform-grid">
-        <div class="platform-btn selected" id="btn-instagram" onclick="togglePlatform('instagram')">
-          <span class="p-icon">📸</span><span class="p-name">Instagram</span>
+    <div class="grid">
+      <!-- ✅ Instagram Checker -->
+      <div class="card">
+        <div class="card-title">📸 Instagram <span class="badge">1 point</span></div>
+
+        <div class="tab-buttons">
+          <button class="tab-btn active" data-tab="ig-single" onclick="switchTab('ig-single')">Single</button>
+          <button class="tab-btn" data-tab="ig-bulk" onclick="switchTab('ig-bulk')">Bulk</button>
         </div>
-        <div class="platform-btn selected" id="btn-threads" onclick="togglePlatform('threads')">
-          <span class="p-icon">🧵</span><span class="p-name">Threads</span>
+
+        <!-- Single Check -->
+        <div class="tab-content active" id="ig-single">
+          <label>Enter Instagram username</label>
+          <input type="text" id="igUsername" placeholder="e.g., zuck" />
+          <button class="btn" onclick="checkInstagram()" id="igBtn">🔍 Check</button>
         </div>
+
+        <!-- Bulk Check -->
+        <div class="tab-content" id="ig-bulk">
+          <label>Enter usernames (one per line)</label>
+          <textarea id="igBulkUsernames" placeholder="zuck&#10;elonmusk&#10;cristiano"></textarea>
+          <button class="btn" onclick="checkInstagramBulk()" id="igBulkBtn">🔍 Check All</button>
+        </div>
+
+        <div id="igResult" class="result-box"></div>
+      </div>
+
+      <!-- ✅ Threads Checker -->
+      <div class="card">
+        <div class="card-title">🧵 Threads <span class="badge">1 point</span></div>
+
+        <div class="tab-buttons">
+          <button class="tab-btn active" data-tab="th-single" onclick="switchTab('th-single')">Single</button>
+          <button class="tab-btn" data-tab="th-bulk" onclick="switchTab('th-bulk')">Bulk</button>
+        </div>
+
+        <!-- Single Check -->
+        <div class="tab-content active" id="th-single">
+          <label>Enter Threads username</label>
+          <input type="text" id="thUsername" placeholder="e.g., zuck" />
+          <button class="btn" onclick="checkThreads()" id="thBtn">🔍 Check</button>
+        </div>
+
+        <!-- Bulk Check -->
+        <div class="tab-content" id="th-bulk">
+          <label>Enter usernames (one per line)</label>
+          <textarea id="thBulkUsernames" placeholder="zuck&#10;elonmusk&#10;cristiano"></textarea>
+          <button class="btn" onclick="checkThreadsBulk()" id="thBulkBtn">🔍 Check All</button>
+        </div>
+
+        <div id="thResult" class="result-box"></div>
       </div>
     </div>
 
-    <div class="card">
-      <div class="card-title">2. Enter Usernames (1 to 1000)</div>
-      <label>One username per line</label>
-      <textarea id="usernameList" placeholder="john_doe&#10;fahad786&#10;star_boy&#10;..." oninput="updateCount()"></textarea>
-      <div class="textarea-footer">
-        <span><span class="count" id="usernameCount">0</span> usernames entered</span>
-        <span>Max 1000</span>
-      </div>
-
-      <div class="points-info">
-        <div class="info-row">
-          <span>💡 1 point = 1 platform check per username</span>
-          <span>You have: <span class="highlight" id="pointsInfo">0</span> points</span>
-        </div>
-        <div style="margin-top:6px; color:#6b7280; font-size:12px;" id="costPreview">Estimated cost: 0 points</div>
-      </div>
-
-      <button class="start-btn" onclick="startCheck()" id="startBtn">🚀 Check Usernames</button>
-    </div>
-
-    <div class="card progress-box" id="progressBox">
-      <div class="card-title">Checking... ⚡</div>
-      <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
-      <div class="progress-text">
-        <span id="progressText">0 checked</span>
-        <span id="progressRemaining">Remaining points: 0</span>
-      </div>
-    </div>
-
-    <div class="card results-box" id="resultsBox">
-      <div class="results-header">
-        <h3>Results</h3>
-        <button class="export-btn" onclick="exportResults()">📋 Copy Available</button>
-      </div>
-      <div class="stats-row">
-        <div class="stat green"><strong id="statAvailable">0</strong>Available</div>
-        <div class="stat purple"><strong id="statTotal">0</strong>Checked</div>
-        <div class="stat"><strong id="statPointsUsed">0</strong>Points Used</div>
-      </div>
-      <div class="table-scroll">
-        <table class="result-table" id="resultTable">
-          <thead>
-            <tr id="tableHeader">
-              <th>Username</th>
-            </tr>
-          </thead>
-          <tbody id="resultBody"></tbody>
-        </table>
+    <!-- ✅ Recent Activity -->
+    <div class="card" style="margin-top:20px;">
+      <div class="card-title">📊 Recent Activity</div>
+      <div id="activityLog" style="color:#6b7280;font-size:13px;">
+        No recent activity
       </div>
     </div>
   </main>
 
   <script>
-    // ✅ API Base URL - SAHI (https:// ke saath)
+    // ✅ API Base URL
     const API_BASE_URL = 'https://username-checker-pro-production.up.railway.app';
 
     const token = localStorage.getItem('token');
@@ -468,8 +432,6 @@
     if (!token) window.location.href = '/login';
 
     let currentPoints = user.points || 0;
-    let selectedPlatforms = new Set(['instagram', 'threads']);
-    let lastResults = [];
 
     document.getElementById('usernameDisplay').textContent = '@' + (user.username || '');
     updatePoints(currentPoints);
@@ -477,174 +439,218 @@
     function updatePoints(pts) {
       currentPoints = pts;
       document.getElementById('pointsDisplay').textContent = pts;
-      document.getElementById('pointsInfo').textContent = pts;
-      document.getElementById('noPointsBox').style.display = pts === 0 ? 'block' : 'none';
-      updateCount();
     }
 
-    function togglePlatform(platform) {
-      const btn = document.getElementById('btn-' + platform);
-      if (selectedPlatforms.has(platform)) {
-        if (selectedPlatforms.size === 1) { showError('At least one platform must be selected'); return; }
-        selectedPlatforms.delete(platform);
-        btn.classList.remove('selected');
-      } else {
-        selectedPlatforms.add(platform);
-        btn.classList.add('selected');
-      }
-      updateCount();
-    }
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
 
-    function getUsernames() {
-      const raw = document.getElementById('usernameList').value;
-      return raw.split('\n').map(u => u.trim()).filter(u => u.length > 0).slice(0, 1000);
-    }
-
-    function updateCount() {
-      const usernames = getUsernames();
-      document.getElementById('usernameCount').textContent = usernames.length;
-      const cost = usernames.length * selectedPlatforms.size;
-      document.getElementById('costPreview').textContent =
-        `Estimated cost: ${cost} points (${usernames.length} usernames × ${selectedPlatforms.size} platform${selectedPlatforms.size > 1 ? 's' : ''})`;
+      document.getElementById(tabId).classList.add('active');
+      document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
     }
 
     function showError(msg) {
       const box = document.getElementById('errorBox');
       box.textContent = '⚠️ ' + msg;
-      box.style.display = 'block';
-      setTimeout(() => box.style.display = 'none', 5000);
+      box.classList.add('show');
+      setTimeout(() => box.classList.remove('show'), 5000);
     }
 
-    function logout() { localStorage.clear();
-      window.location.href = '/login'; }
+    function showLoading(btnId) {
+      const btn = document.getElementById(btnId);
+      btn.disabled = true;
+      btn.textContent = '⏳ Checking...';
+    }
 
-    async function startCheck() {
-      const usernames = getUsernames();
-      const platforms = [...selectedPlatforms];
+    function hideLoading(btnId, text) {
+      const btn = document.getElementById(btnId);
+      btn.disabled = false;
+      btn.textContent = text || '🔍 Check';
+    }
 
+    function displayResult(containerId, data) {
+      const container = document.getElementById(containerId);
+      container.classList.add('show');
+
+      if (data.success && data.result && data.result.success) {
+        const r = data.result;
+        container.innerHTML = `
+          <div class="stats-row">
+            <div class="stat green"><strong>✅</strong> Available</div>
+            <div class="stat purple"><strong>${r.followers || 0}</strong> Followers</div>
+            <div class="stat blue"><strong>${r.following || 0}</strong> Following</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">
+            ${r.profile_pic ? `<img src="${r.profile_pic}" class="profile-pic" />` : ''}
+            <div>
+              <div style="font-weight:700;font-size:18px;">@${r.username}</div>
+              <div style="color:#4b5563;">${r.full_name || 'No name'}</div>
+              <div>
+                ${r.is_verified ? '<span class="verified-badge">✓ Verified</span>' : ''}
+                ${r.is_private ? '<span class="private-badge">🔒 Private</span>' : ''}
+              </div>
+              <div style="font-size:12px;color:#6b7280;margin-top:4px;">Method: ${r.method || 'N/A'}</div>
+            </div>
+          </div>
+          <div style="font-size:12px;color:#6b7280;">
+            Points remaining: ${data.remainingPoints}
+          </div>
+        `;
+      } else if (data.success && data.results) {
+        // Bulk results
+        const available = data.results.filter(r => r.success);
+        const taken = data.results.filter(r => !r.success);
+
+        container.innerHTML = `
+          <div class="stats-row">
+            <div class="stat green"><strong>${available.length}</strong> Available</div>
+            <div class="stat red"><strong>${taken.length}</strong> Taken</div>
+            <div class="stat purple"><strong>${data.totalChecked}</strong> Checked</div>
+          </div>
+          ${available.length > 0 ? `
+            <div style="margin-top:8px;font-weight:600;color:#16a34a;">✅ Available Usernames:</div>
+            ${available.map(r => `<div class="result-item"><span class="username">@${r.username}</span><span class="status status-available">Available</span></div>`).join('')}
+          ` : ''}
+          ${taken.length > 0 ? `
+            <div style="margin-top:8px;font-weight:600;color:#dc2626;">❌ Taken Usernames:</div>
+            ${taken.map(r => `<div class="result-item"><span class="username">@${r.username}</span><span class="status status-taken">${r.status || 'Taken'}</span></div>`).join('')}
+          ` : ''}
+          <div style="font-size:12px;color:#6b7280;margin-top:12px;">
+            Points remaining: ${data.remainingPoints}
+          </div>
+        `;
+      } else {
+        container.innerHTML = `
+          <div style="color:#dc2626;font-weight:600;">❌ ${data.message || 'Not found or error'}</div>
+        `;
+      }
+
+      updatePoints(data.remainingPoints);
+      addActivity(data);
+    }
+
+    function addActivity(data) {
+      const log = document.getElementById('activityLog');
+      const time = new Date().toLocaleTimeString();
+      const count = data.results ? data.results.length : 1;
+      const available = data.results ? data.results.filter(r => r.success).length : (data.result?.success ? 1 : 0);
+      log.innerHTML = `
+        <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f3f4f6;">
+          <span>${time} - Checked ${count} username(s)</span>
+          <span style="color:#16a34a;">${available} available</span>
+        </div>
+        ${log.innerHTML}
+      `;
+    }
+
+    // ✅ Instagram Single
+    async function checkInstagram() {
+      const username = document.getElementById('igUsername').value.trim();
+      if (!username) { showError('Enter a username'); return; }
+
+      showLoading('igBtn');
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/instagram/check`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ username })
+        });
+        const data = await res.json();
+        displayResult('igResult', data);
+      } catch (e) {
+        showError('Network error: ' + e.message);
+      }
+      hideLoading('igBtn');
+    }
+
+    // ✅ Instagram Bulk
+    async function checkInstagramBulk() {
+      const text = document.getElementById('igBulkUsernames').value;
+      const usernames = text.split('\n').map(u => u.trim()).filter(u => u.length > 0);
       if (usernames.length === 0) { showError('Enter at least one username'); return; }
-      if (usernames.length > 1000) { showError('Maximum 1000 usernames allowed'); return; }
-      if (platforms.length === 0) { showError('Select at least one platform'); return; }
+      if (usernames.length > 20) { showError('Maximum 20 usernames per request'); return; }
 
-      const totalCost = usernames.length * platforms.length;
-      if (currentPoints < totalCost) {
-        const affordable = Math.floor(currentPoints / platforms.length);
-        if (affordable === 0) { showError('Not enough points. Contact admin.'); return; }
-        if (!confirm(`You need ${totalCost} points but only have ${currentPoints}. Only the first ${affordable} usernames will be checked. Continue?`))
-        return;
+      showLoading('igBulkBtn');
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/instagram/bulk`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ usernames })
+        });
+        const data = await res.json();
+        displayResult('igResult', data);
+      } catch (e) {
+        showError('Network error: ' + e.message);
       }
-
-      document.getElementById('startBtn').disabled = true;
-      document.getElementById('progressBox').style.display = 'block';
-      document.getElementById('resultsBox').style.display = 'none';
-      document.getElementById('progressBar').style.width = '0%';
-      document.getElementById('errorBox').style.display = 'none';
-
-      lastResults = [];
-      let totalChecked = 0;
-      const batchSize = 10;
-
-      for (let i = 0; i < usernames.length; i += batchSize) {
-        if (currentPoints < platforms.length) { showError('Points ran out mid-check.'); break; }
-
-        const batch = usernames.slice(i, i + batchSize);
-        const maxAffordableInBatch = Math.floor(currentPoints / platforms.length);
-        const actualBatch = batch.slice(0, maxAffordableInBatch);
-        if (actualBatch.length === 0) break;
-
-        const success = await checkBatch(actualBatch, platforms, usernames.length);
-        totalChecked += actualBatch.length;
-        if (!success || actualBatch.length < batch.length) break;
-
-        await sleep(300);
-      }
-
-      document.getElementById('startBtn').disabled = false;
-      document.getElementById('progressBox').style.display = 'none';
-      showFinalResults(platforms);
+      hideLoading('igBulkBtn', '🔍 Check All');
     }
 
-    async function checkBatch(usernames, platforms, total) {
+    // ✅ Threads Single
+    async function checkThreads() {
+      const username = document.getElementById('thUsername').value.trim();
+      if (!username) { showError('Enter a username'); return; }
+
+      showLoading('thBtn');
       try {
         const res = await fetch(`${API_BASE_URL}/api/check/bulk`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-          body: JSON.stringify({ usernames, platforms })
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ usernames: [username], platforms: ['threads'] })
         });
         const data = await res.json();
-        if (!data.success) { showError(data.message); return false; }
+        const container = document.getElementById('thResult');
+        container.classList.add('show');
 
-        updatePoints(data.remainingPoints);
-        lastResults.push(...data.results);
+        if (data.success && data.results && data.results.length > 0) {
+          const r = data.results[0];
+          const status = r.threads;
+          const name = r.threads_name;
 
-        const pct = Math.min(Math.round((lastResults.length / total) * 100), 100);
-        document.getElementById('progressBar').style.width = pct + '%';
-        document.getElementById('progressText').textContent = lastResults.length + ' checked';
-        document.getElementById('progressRemaining').textContent = 'Remaining points: ' + data.remainingPoints;
-
-        return true;
+          if (status === 'active') {
+            container.innerHTML = `
+              <div class="stats-row">
+                <div class="stat green"><strong>✅</strong> Available</div>
+                <div class="stat purple"><strong>${name || 'No name'}</strong></div>
+              </div>
+              <div style="font-weight:700;font-size:18px;">@${r.username}</div>
+              <div style="font-size:12px;color:#6b7280;margin-top:8px;">Points remaining: ${data.remainingPoints}</div>
+            `;
+          } else if (status === 'available') {
+            container.innerHTML = `
+              <div class="stats-row">
+                <div class="stat green"><strong>✅</strong> Available</div>
+              </div>
+              <div style="font-weight:700;font-size:18px;">@${r.username} is available!</div>
+              <div style="font-size:12px;color:#6b7280;margin-top:8px;">Points remaining: ${data.remainingPoints}</div>
+            `;
+          } else {
+            container.innerHTML = `
+              <div style="color:#dc2626;font-weight:600;">❌ @${r.username} - ${status || 'Not available'}</div>
+              <div style="font-size:12px;color:#6b7280;margin-top:8px;">Points remaining: ${data.remainingPoints}</div>
+            `;
+          }
+          updatePoints(data.remainingPoints);
+          addActivity(data);
+        } else {
+          container.innerHTML = `<div style="color:#dc2626;">❌ ${data.message || 'Error checking username'}</div>`;
+        }
       } catch (e) {
-        showError('Network error — please check your connection');
-        return false;
+        showError('Network error: ' + e.message);
       }
+      hideLoading('thBtn');
     }
 
-    function showFinalResults(platforms) {
-      const availableCount = lastResults.filter(r =>
-        platforms.some(p => r[p] === 'available')
-      ).length;
-
-      document.getElementById('statAvailable').textContent = availableCount;
-      document.getElementById('statTotal').textContent = lastResults.length;
-      document.getElementById('statPointsUsed').textContent = lastResults.length * platforms.length;
-      document.getElementById('resultsBox').style.display = 'block';
-
-      const header = document.getElementById('tableHeader');
-      header.innerHTML = '<th>Username</th>' + platforms.map(p =>
-        `<th>${p.charAt(0).toUpperCase() + p.slice(1)}</th>`
-      ).join('');
-
-      const body = document.getElementById('resultBody');
-      if (lastResults.length === 0) {
-        body.innerHTML =
-          `<tr><td colspan="${platforms.length + 1}" style="text-align:center;color:#6b7280;padding:30px;">No results yet</td></tr>`;
-        return;
-      }
-      body.innerHTML = lastResults.map(r => {
-        const cells = platforms.map(p => {
-          const val = r[p];
-          const name = r[p + '_name'];
-          let cls = 'status-unknown',
-            txt = '⚠️ Unknown';
-          if (val === 'available') { cls = 'status-available';
-            txt = '✅ Available'; } else if (val === 'active') { cls = 'status-active';
-            txt = '🟢 Active' + (name ? ` — ${escapeHtml(name)}` : ''); } else if (val === 'suspended') { cls =
-              'status-suspended';
-            txt = '🔴 Suspended'; }
-          return `<td><span class="status-pill ${cls}">${txt}</span></td>`;
-        }).join('');
-        return `<tr><td style="font-weight:600;">@${r.username}</td>${cells}</tr>`;
-      }).join('');
-    }
-
-    function escapeHtml(str) {
-      const div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
-    }
-
-    function exportResults() {
-      const platforms = [...selectedPlatforms];
-      const available = lastResults.filter(r => platforms.some(p => r[p] === 'available')).map(r => r.username);
-      if (available.length === 0) { showError('No available usernames to copy'); return; }
-      navigator.clipboard.writeText(available.join('\n')).then(() => {
-        const btn = document.querySelector('.export-btn');
-        btn.textContent = '✓ Copied!';
-        setTimeout(() => btn.textContent = '📋 Copy Available', 2000);
-      });
-    }
-
-    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-  </script>
-</body>
-</html>
+    // ✅ Threads Bulk
+    async function checkThreadsBulk() {
+      const text = document.getElementById('thBulkUsernames').value;
+      const usernames = text.split('\n').map(u => u.trim()).filter(u => u.length > 0);
+      if (usernames.length === 0) { s
