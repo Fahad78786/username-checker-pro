@@ -14,7 +14,16 @@ const PROXY_PASSWORD = process.env.PROXY_PASSWORD || 'dy77ui0vm9rk';
 const PROXY_HOST = process.env.PROXY_HOST || 'p.webshare.io';
 const PROXY_PORT = process.env.PROXY_PORT || '80';
 
+// ✅ YEH LINE CHANGE KARO!
+// Pehle: const auth = require('./routes/auth');
+// Ab:
+const auth = require('./auth');  // ✅ Sahih
+
 const PROXY_URL = `http://${PROXY_USERNAME}:${PROXY_PASSWORD}@${PROXY_HOST}:${PROXY_PORT}`;
+
+console.log('[PROXY] Using proxy:', PROXY_HOST, 'Port:', PROXY_PORT);
+
+// ... baqi code aap ka waisa hi hai
 
 console.log('[PROXY] Using proxy:', PROXY_HOST, 'Port:', PROXY_PORT);
 
