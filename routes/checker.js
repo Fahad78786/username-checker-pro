@@ -77,6 +77,7 @@ async function checkOnePlatform(platform, username) {
     });
 
     console.log(`[CHECK DONE] platform=${platform} username=${username} status=${response.status} bodyLen=${response.data?.toString().length || 0}`);
+    console.log(`[BODY SNIPPET] ${platform}/${username}: ${body.slice(0, 300).replace(/\n/g, ' ')}`);
 
     const status = response.status;
     const body = response.data?.toString() || '';
