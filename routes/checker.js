@@ -5,7 +5,7 @@ const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const supabase = require('../supabase');
 
-// ✅ Stealth Plugin - Instagram کو دھوکہ دینے کے لیے
+// ✅ Stealth Plugin - Instagram ko dhoka dene ke liye
 puppeteer.use(StealthPlugin());
 
 // ✅ Proxy Authentication
@@ -14,6 +14,7 @@ const PROXY_PASSWORD = process.env.PROXY_PASSWORD || 'dy77ui0vm9rk';
 const PROXY_HOST = process.env.PROXY_HOST || 'p.webshare.io';
 const PROXY_PORT = process.env.PROXY_PORT || '80';
 
+// ✅ Proxy URL (sahi format)
 const PROXY_URL = `http://${PROXY_USERNAME}:${PROXY_PASSWORD}@${PROXY_HOST}:${PROXY_PORT}`;
 
 function userAuth(req, res, next) {
@@ -28,8 +29,7 @@ function userAuth(req, res, next) {
   }
 }
 
-// ✅ بہتر براؤزر مینیجر (Chrome Path کے ساتھ)
-let browserInstance = null;
+// ✅ Browser Manager
 let browserPromise = null;
 
 async function getBrowser() {
@@ -41,18 +41,13 @@ async function getBrowser() {
     } catch (err) {
       console.log('[BROWSER CRASHED] Creating new one...');
       browserPromise = null;
-      browserInstance = null;
     }
   }
 
-  // ✅ Railway/Render کے لیے Chrome Path
-  const chromePath = process.env.PUPPETEER_EXECUTABLE_PATH || 
-                     process.env.CHROME_PATH ||
-                     '/usr/bin/chromium';
+  console.log('[BROWSER] Launching with proxy:', PROXY_HOST);
 
   browserPromise = puppeteer.launch({
     headless: 'new',
-    executablePath: chromePath,  // ✅ یہ نئی لائن ہے
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
@@ -60,7 +55,7 @@ async function getBrowser() {
       '--disable-gpu',
       '--disable-web-security',
       '--disable-features=IsolateOrigins,site-per-process',
-      `--proxy-server=${PROXY_URL}`,
+      `--proxy-server=http://${PROXY_HOST}:${PROXY_PORT}`,
       '--window-size=1280,800'
     ]
   }).catch(err => {
@@ -72,7 +67,7 @@ async function getBrowser() {
   return browserPromise;
 }
 
-// ✅ صارف کا نام نکالنے کا بہتر طریقہ
+// ✅ Extract Display Name
 function extractDisplayName(body, username) {
   try {
     const jsonMatch = body.match(/"full_name":"([^"]+)"/);
@@ -100,7 +95,7 @@ function extractDisplayName(body, username) {
   }
 }
 
-// ✅ اکاؤنٹ چیک کرنے کا مکمل فنکشن
+// ✅ Check One Platform
 async function checkOnePlatform(platform, username) {
   const cleanUsername = username.replace('@', '').trim();
   if (!cleanUsername) return { status: 'invalid', displayName: null };
@@ -121,11 +116,13 @@ async function checkOnePlatform(platform, username) {
       const browser = await getBrowser();
       page = await browser.newPage();
 
+      // ✅ Proxy Authentication
       await page.authenticate({
         username: PROXY_USERNAME,
         password: PROXY_PASSWORD
       });
 
+      // ✅ Real Browser Headers
       await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36');
       await page.setViewport({ width: 1280, height: 800 });
 
@@ -136,6 +133,8 @@ async function checkOnePlatform(platform, username) {
         'Sec-Ch-Ua-Mobile': '?0',
         'Sec-Ch-Ua-Platform': '"Windows"',
       });
+
+      console.log(`[CHECK] ${platform}/${cleanUsername} - Loading...`);
 
       const response = await page.goto(url, {
         waitUntil: 'networkidle2',
@@ -152,6 +151,7 @@ async function checkOnePlatform(platform, username) {
 
       await page.close();
 
+      // ✅ Check conditions
       if (status === 404 ||
         bodyLower.includes("sorry, this page") ||
         bodyLower.includes("isn't available") ||
@@ -212,7 +212,7 @@ async function checkOnePlatform(platform, username) {
   return { status: 'error', displayName: null };
 }
 
-// ✅ دونوں پلیٹ فارمز کو ترتیب سے چیک کرو
+// ✅ Check All Platforms
 async function checkUsernameAllPlatforms(username, platforms) {
   const result = { username };
 
