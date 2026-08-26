@@ -4,18 +4,21 @@ const jwt = require('jsonwebtoken');
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const supabase = require('../supabase');
+const { HttpsProxyAgent } = require('https-proxy-agent');
 
-// ✅ Stealth Plugin - Instagram ko dhoka dene ke liye
+// ✅ Stealth Plugin
 puppeteer.use(StealthPlugin());
 
-// ✅ Proxy Authentication
+// ✅ Proxy Credentials (Environment Variables se)
 const PROXY_USERNAME = process.env.PROXY_USERNAME || 'mtqroiwi-CH-11';
 const PROXY_PASSWORD = process.env.PROXY_PASSWORD || 'dy77ui0vm9rk';
 const PROXY_HOST = process.env.PROXY_HOST || 'p.webshare.io';
 const PROXY_PORT = process.env.PROXY_PORT || '80';
 
-// ✅ Proxy URL (sahi format)
+// ✅ Proxy URL (full)
 const PROXY_URL = `http://${PROXY_USERNAME}:${PROXY_PASSWORD}@${PROXY_HOST}:${PROXY_PORT}`;
+
+console.log('[PROXY] Using proxy:', PROXY_HOST, 'Port:', PROXY_PORT);
 
 function userAuth(req, res, next) {
   try {
@@ -29,7 +32,7 @@ function userAuth(req, res, next) {
   }
 }
 
-// ✅ Browser Manager
+// ✅ Browser Manager (Proxy ke saath)
 let browserPromise = null;
 
 async function getBrowser() {
@@ -39,7 +42,7 @@ async function getBrowser() {
       await browser.version();
       return browser;
     } catch (err) {
-      console.log('[BROWSER CRASHED] Creating new one...');
+      console.log('[BROWSER] Crashed, creating new...');
       browserPromise = null;
     }
   }
@@ -55,7 +58,7 @@ async function getBrowser() {
       '--disable-gpu',
       '--disable-web-security',
       '--disable-features=IsolateOrigins,site-per-process',
-      `--proxy-server=http://${PROXY_HOST}:${PROXY_PORT}`,
+      `--proxy-server=${PROXY_HOST}:${PROXY_PORT}`,
       '--window-size=1280,800'
     ]
   }).catch(err => {
@@ -95,7 +98,7 @@ function extractDisplayName(body, username) {
   }
 }
 
-// ✅ Check One Platform
+// ✅ Check One Platform (Proxy Auth ke saath)
 async function checkOnePlatform(platform, username) {
   const cleanUsername = username.replace('@', '').trim();
   if (!cleanUsername) return { status: 'invalid', displayName: null };
@@ -116,22 +119,21 @@ async function checkOnePlatform(platform, username) {
       const browser = await getBrowser();
       page = await browser.newPage();
 
-      // ✅ Proxy Authentication
+      // ✅ PROXY AUTHENTICATION - YEH SAB SE IMPORTANT HAI
       await page.authenticate({
         username: PROXY_USERNAME,
         password: PROXY_PASSWORD
       });
 
-      // ✅ Real Browser Headers
+      console.log('[PROXY] Authenticated with:', PROXY_USERNAME);
+
+      // ✅ Headers
       await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36');
       await page.setViewport({ width: 1280, height: 800 });
 
       await page.setExtraHTTPHeaders({
         'Accept-Language': 'en-US,en;q=0.9',
         'Accept-Encoding': 'gzip, deflate, br',
-        'Sec-Ch-Ua': '"Not A(Brand";v="99", "Google Chrome";v="121", "Chromium";v="121"',
-        'Sec-Ch-Ua-Mobile': '?0',
-        'Sec-Ch-Ua-Platform': '"Windows"',
       });
 
       console.log(`[CHECK] ${platform}/${cleanUsername} - Loading...`);
@@ -147,11 +149,11 @@ async function checkOnePlatform(platform, username) {
       const body = await page.content();
       const bodyLower = body.toLowerCase();
 
-      console.log(`[CHECK] ${platform}/${cleanUsername} status=${status} bodyLen=${body.length}`);
+      console.log(`[CHECK] ${platform}/${cleanUsername} status=${status}`);
 
       await page.close();
 
-      // ✅ Check conditions
+      // ✅ Check Conditions
       if (status === 404 ||
         bodyLower.includes("sorry, this page") ||
         bodyLower.includes("isn't available") ||
@@ -162,19 +164,16 @@ async function checkOnePlatform(platform, username) {
 
       if (bodyLower.includes("account has been disabled") ||
         bodyLower.includes("account suspended") ||
-        bodyLower.includes("account has been restricted") ||
-        bodyLower.includes("this account has been disabled")) {
+        bodyLower.includes("account has been restricted")) {
         return { status: 'suspended', displayName: null };
       }
 
       if (bodyLower.includes("challenge") ||
-        bodyLower.includes("verify your identity") ||
-        bodyLower.includes("we detected unusual activity")) {
+        bodyLower.includes("verify your identity")) {
         return { status: 'challenge', displayName: null };
       }
 
-      if (bodyLower.includes("login") &&
-        (bodyLower.includes("log in") || bodyLower.includes("sign in"))) {
+      if (bodyLower.includes("login") && bodyLower.includes("log in")) {
         return { status: 'login_required', displayName: null };
       }
 
