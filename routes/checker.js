@@ -5,29 +5,18 @@ const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const supabase = require('../supabase');
 
-// ✅ Stealth Plugin
+// Stealth Plugin
 puppeteer.use(StealthPlugin());
 
-// ✅ Proxy Credentials
+// Proxy Credentials
 const PROXY_USERNAME = process.env.PROXY_USERNAME || 'mtqroiwi-CH-11';
 const PROXY_PASSWORD = process.env.PROXY_PASSWORD || 'dy77ui0vm9rk';
 const PROXY_HOST = process.env.PROXY_HOST || 'p.webshare.io';
 const PROXY_PORT = process.env.PROXY_PORT || '80';
 
-// ✅ YEH LINE CHANGE KARO!
-// Pehle: const auth = require('./routes/auth');
-// Ab:
-const auth = require('./auth');  // ✅ Sahih
-
-const PROXY_URL = `http://${PROXY_USERNAME}:${PROXY_PASSWORD}@${PROXY_HOST}:${PROXY_PORT}`;
-
 console.log('[PROXY] Using proxy:', PROXY_HOST, 'Port:', PROXY_PORT);
 
-// ... baqi code aap ka waisa hi hai
-
-console.log('[PROXY] Using proxy:', PROXY_HOST, 'Port:', PROXY_PORT);
-
-// ✅ User Auth Middleware
+// User Auth Middleware
 function userAuth(req, res, next) {
   try {
     const token = req.headers.authorization?.split(' ')[1];
@@ -40,7 +29,7 @@ function userAuth(req, res, next) {
   }
 }
 
-// ✅ Browser Manager
+// Browser Manager
 let browserPromise = null;
 
 async function getBrowser() {
@@ -57,7 +46,7 @@ async function getBrowser() {
 
   console.log('[BROWSER] Launching with proxy:', PROXY_HOST);
 
-  browserPromise = puppeteer.launch({
+  const launchOptions = {
     headless: 'new',
     args: [
       '--no-sandbox',
@@ -69,7 +58,13 @@ async function getBrowser() {
       `--proxy-server=${PROXY_HOST}:${PROXY_PORT}`,
       '--window-size=1280,800'
     ]
-  }).catch(err => {
+  };
+
+  if (process.env.PUPPETEER_EXECUTABLE_PATH) {
+    launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
+  }
+
+  browserPromise = puppeteer.launch(launchOptions).catch(err => {
     console.error('[BROWSER LAUNCH FAILED]', err.message);
     browserPromise = null;
     throw err;
@@ -78,7 +73,7 @@ async function getBrowser() {
   return browserPromise;
 }
 
-// ✅ Extract Display Name
+// Extract Display Name
 function extractDisplayName(body, username) {
   try {
     const jsonMatch = body.match(/"full_name":"([^"]+)"/);
@@ -106,7 +101,7 @@ function extractDisplayName(body, username) {
   }
 }
 
-// ✅ Check One Platform
+// Check One Platform
 async function checkOnePlatform(platform, username) {
   const cleanUsername = username.replace('@', '').trim();
   if (!cleanUsername) return { status: 'invalid', displayName: null };
@@ -147,7 +142,9 @@ async function checkOnePlatform(platform, username) {
         timeout: 30000
       });
 
-      await page.waitForTimeout(2000);
+      // FIX: page.waitForTimeout() was removed in newer Puppeteer versions.
+      // Use a plain Promise-based delay instead.
+      await new Promise(r => setTimeout(r, 2000));
 
       const status = response ? response.status() : 0;
       const body = await page.content();
@@ -214,7 +211,7 @@ async function checkOnePlatform(platform, username) {
   return { status: 'error', displayName: null };
 }
 
-// ✅ Check All Platforms
+// Check All Platforms
 async function checkUsernameAllPlatforms(username, platforms) {
   const result = { username };
 
@@ -228,7 +225,7 @@ async function checkUsernameAllPlatforms(username, platforms) {
   return result;
 }
 
-// ✅ Bulk Check API
+// Bulk Check API
 router.post('/bulk', userAuth, async (req, res) => {
   try {
     const { usernames, platforms } = req.body;
